@@ -1,0 +1,63 @@
+---
+title: "Post-install validation"
+description: "Checklist for deciding whether a Datology deployment is ready."
+icon: "circle-check"
+---
+
+Run these checks after CloudFormation reports that the stack is complete.
+
+## Infrastructure checks
+
+```bash
+aws cloudformation describe-stacks \
+  --stack-name datology-infrastructure-<customer>-<timestamp>
+
+kubectl get nodes
+kubectl get namespaces
+```
+
+The EKS cluster should be reachable from the installer or CLI runner.
+
+## Product stack checks
+
+Confirm the product services are present:
+
+```bash
+kubectl get pods
+kubectl get svc
+kubectl get ingress
+```
+
+The workflow endpoint, asset tracker database service, Spark Operator, Ray
+components, and monitoring stack should be created.
+
+## CLI checks
+
+Run from the CLI runner:
+
+```bash
+datology --help
+datology version
+datology list-curations
+datology list-curation-recipes
+```
+
+## Workflow checks
+
+The deployment runs a Flyte smoke test job when the full stack is installed.
+Confirm it completed and inspect its logs if needed:
+
+```bash
+kubectl get jobs
+kubectl logs job/<flyte-smoke-test-job-name>
+```
+
+## Curation readiness
+
+Before handing the deployment to users, confirm:
+
+- The CLI runner has `DATOLOGY_CONFIG_PATH`, `FLYTECTL_CONFIG`,
+  `ASSET_TRACKER_PROD_URI`, and `KUBECONFIG`.
+- Workflow entry points are registered for the default runtime version.
+- The asset tracker is reachable.
+- A small dataset registration or curation smoke test can run to completion.

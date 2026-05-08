@@ -1,0 +1,66 @@
+---
+title: "Job logs"
+description: "Where installer, Spark, Ray, and CLI runner logs are stored."
+icon: "file-lines"
+---
+
+Datology logs are split across local instance files, Kubernetes pod logs, and
+the deployment job logs bucket.
+
+## Installer logs
+
+On the Helm installer:
+
+```text
+/var/log/helm-installer.log
+```
+
+The installer also copies logs to:
+
+```text
+s3://<environment>-datologyai-job-logs/helm-installer/
+```
+
+## CLI runner logs
+
+On the CLI runner:
+
+```text
+/var/log/cli-runner.log
+/var/log/cli-runner-docker-install.log
+```
+
+The runner also copies logs to:
+
+```text
+s3://<environment>-datologyai-job-logs/cli-runner/
+```
+
+## Runtime logs
+
+Spark and Ray jobs write Kubernetes pod logs and S3 log artifacts. Use `ddb` to
+find logs related to a specific curation:
+
+```bash
+ddb <curation_id>
+```
+
+For direct Kubernetes inspection:
+
+```bash
+kubectl get pods
+kubectl logs <pod-name>
+kubectl describe pod <pod-name>
+```
+
+## What to collect for support
+
+Include:
+
+- Curation ID
+- Run ID
+- Output path
+- Runtime version
+- `datology show-curation <curation_id>` output
+- Relevant `ddb` findings
+- Installer or runtime log prefix

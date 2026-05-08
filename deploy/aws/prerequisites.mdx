@@ -1,0 +1,81 @@
+---
+title: "AWS prerequisites"
+description: "AWS access, DNS, and account inputs required before deploying Datology."
+icon: "cloud"
+---
+
+Prepare these items before running the deployment.
+
+## Account and region
+
+You need an AWS account, a target region, and AWS CLI credentials that can
+create or manage the Datology stack.
+
+```bash
+export AWS_PROFILE="<customer-aws-profile>"
+export AWS_DEFAULT_REGION="us-east-1"
+```
+
+The deployment defaults to the region configured in your AWS profile when
+`AWS_DEFAULT_REGION` is not set.
+
+## Required permissions
+
+The deploying identity needs permissions for these AWS services:
+
+- CloudFormation
+- EC2 and VPC networking
+- EKS
+- IAM
+- S3
+- ECR
+- Route53
+- ACM
+- Secrets Manager
+- CloudWatch and CloudWatch Logs
+- STS
+
+If your AWS organization requires permission boundaries, set
+`PERMISSION_BOUNDARY_POLICY_ARN` before deployment.
+
+## Required inputs
+
+| Variable | Purpose |
+| --- | --- |
+| `DEPLOYMENT_PUBLIC_KEY` | SSH public key used for deployment access and debugging. |
+| `CUSTOMER_NAME_PREFIX` | Lowercase customer identifier used in stack naming and default domain generation. |
+| `VPC_SLASH_16_CIDR_BLOCK` | First two octets for new VPC CIDR allocation when creating a new network. |
+
+Example:
+
+```bash
+export DEPLOYMENT_PUBLIC_KEY="ssh-rsa AAAA..."
+export CUSTOMER_NAME_PREFIX="acme"
+export VPC_SLASH_16_CIDR_BLOCK="10.50"
+```
+
+## DNS
+
+Datology needs a Route53 hosted zone for the customer subdomain. By default,
+the deployment derives it from `CUSTOMER_NAME_PREFIX`:
+
+```text
+<customer-name>.accounts.datologyai.com
+```
+
+Set `HOSTED_ZONE_NAME` when using a specific hosted zone.
+
+## Optional existing infrastructure
+
+Datology can deploy into new infrastructure or connect to existing network and
+EKS resources. For existing resources, collect:
+
+- VPC ID
+- Private subnet IDs
+- CLI runner subnet ID
+- EKS cluster name
+- EKS node group role name
+- Existing VPC endpoint security group, if used
+
+See [deployment environment variables](/reference/deployment-environment-variables)
+for the exact variable names.

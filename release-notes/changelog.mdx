@@ -1,0 +1,44 @@
+---
+title: "Changelog"
+description: "Customer-visible stack, runtime, and CLI changes."
+icon: "newspaper"
+---
+
+Use this page for customer-facing release notes once Datology publishes a
+public stack and runtime versioning policy.
+
+## Upcoming format
+
+Each release entry should include:
+
+- Release date
+- Stack version
+- Runtime version
+- CLI version or build identifier
+- New features
+- Changed behavior
+- Fixed issues
+- Known issues
+- Required operator actions
+
+## Template
+
+```md
+## <version> - <date>
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Operator actions
+
+### Known issues
+```
+
+Runtime-only updates should call out whether operators need to run:
+
+```bash
+datology upgrade-launchplans --version <runtime-version>
+```

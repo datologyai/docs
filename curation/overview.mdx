@@ -1,0 +1,39 @@
+---
+title: "Curation overview"
+description: "The CLI workflow for turning registered datasets into curated outputs."
+icon: "wand-magic-sparkles"
+---
+
+Datology curations are launched from the CLI runner with the `datology`
+command. The CLI package is `datology-cli`, but deployed customer environments
+use the `datology` wrapper.
+
+## Workflow
+
+1. Register or reference source data.
+2. Choose a supported recipe.
+3. Preview the resolved curation.
+4. Launch the run.
+5. Monitor status and task progress.
+6. Inspect the output path and produced assets.
+7. Use `ddb` when you need deeper task, Spark, Ray, or log detail.
+
+## Required CLI context
+
+The CLI runner normally exports these variables for you:
+
+```bash
+export DATOLOGY_CONFIG_PATH=/home/ubuntu/.config/datology_config.json
+export FLYTECTL_CONFIG=/home/ubuntu/.config/flyte_config.yaml
+export ASSET_TRACKER_PROD_URI="<asset-tracker-uri>"
+export KUBECONFIG=/home/ubuntu/.kube/config
+```
+
+Every curation guide assumes commands run from the CLI runner unless noted
+otherwise.
+
+## IDs to keep
+
+Keep the Curation ID, Run ID, and output path from every important run. The
+Curation ID is used for monitoring and debugging. The Run ID is used for
+metadata and lineage. The output path is used to inspect produced assets.

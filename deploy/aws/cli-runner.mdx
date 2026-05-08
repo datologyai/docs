@@ -1,0 +1,62 @@
+---
+title: "CLI runner"
+description: "How the operational CLI host is configured."
+icon: "terminal"
+---
+
+The CLI runner is an EC2 instance created by the deployment. It is the standard
+place to run customer operations after installation.
+
+## Installed tools
+
+The runner installs and validates:
+
+- AWS CLI
+- `kubectl`
+- `flytectl`
+- `psql`
+- Python
+- `datology`
+- Optional `ddb`
+
+The `datology` wrapper runs the Datology CLI PEX:
+
+```bash
+python3.11 /home/ubuntu/datology-cli.pex "$@"
+```
+
+If `INSTALL_DDB=true`, the `ddb` wrapper runs:
+
+```bash
+python3.11 /home/ubuntu/ddb-cli.pex "$@"
+```
+
+## Generated configuration
+
+The CLI runner writes customer configuration under `/home/ubuntu/.config`:
+
+| Path | Purpose |
+| --- | --- |
+| `/home/ubuntu/.config/datology_config.json` | Datology storage, image, cluster, scheduler, and default runtime config. |
+| `/home/ubuntu/.config/flyte_config.yaml` | Workflow orchestration endpoint config. |
+| `/home/ubuntu/.kube/config` | Kubernetes access for operator commands. |
+
+The runner also exports:
+
+```bash
+export DATOLOGY_CONFIG_PATH=/home/ubuntu/.config/datology_config.json
+export FLYTECTL_CONFIG=/home/ubuntu/.config/flyte_config.yaml
+export ASSET_TRACKER_PROD_URI="<asset-tracker-uri>"
+export KUBECONFIG=/home/ubuntu/.kube/config
+```
+
+## Validate the runner
+
+```bash
+datology --help
+datology version
+datology list-curations
+kubectl get nodes
+```
+
+`datology list-curations` confirms both workflow and asset-tracker access.

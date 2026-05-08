@@ -1,133 +1,81 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
-icon: 'star'
+title: "DatologyAI documentation"
+description: "Deploy Datology and use curated training data to build better models with less wasted compute."
+icon: "book-open"
 ---
 
-## Setting up
+Datology is a platform that turns large volumes of raw data into high-quality datasets
+for training AI models. It identifies and shapes the most valuable data so teams can
+train better models with less data and compute, reducing the risk of underperforming
+high-cost training runs.
 
-Get your documentation site up and running in minutes.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
+These docs how to operate the Datology product, from deploying it to curating datasets.
 
 <Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Deploy the stack, configure the CLI, and launch a first curation.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Curate data" icon="wand-magic-sparkles" href="/curation/overview">
+    Register datasets, choose recipes, preview runs, and inspect outputs.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Deployment" icon="server" href="/deploy/overview">
+    Understand the deployment flow and platform-specific install paths.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="CLI reference" icon="terminal" href="/reference/cli">
+    See the customer-facing operational commands and required configuration.
   </Card>
 </Columns>
 
-## Create beautiful pages
+## Platform overview
 
-Everything you need to create world-class documentation.
+Datology runs in customer-controlled infrastructure. Your data stays in your
+environment while Datology orchestrates distributed curation workflows against
+the object-storage paths and compute resources you configure.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+The platform is organized around a few customer-facing primitives:
 
-## Make your content agent ready
+- **Recipes** define supported curation workflows.
+- **Datasets** represent source or produced data in object storage.
+- **Curations** run recipes against datasets.
+- **Assets** track produced outputs, intermediate data, metadata, and lineage.
+- **Versions** bind curations to a runtime image and registered workflow entry point.
 
-Make your docs work for humans and AI agents alike.
+The current customer interface is the `datology` CLI on the CLI runner created
+by deployment.
 
-<Columns cols={2}>
-  <Card
-    title="Prompt component"
-    icon="robot"
-    href="/agent-ready/prompt"
-  >
-    Embed shareable AI prompts readers can copy or open in Cursor.
-  </Card>
-  <Card
-    title="Visibility"
-    icon="eye"
-    href="/agent-ready/visibility"
-  >
-    Show different content to humans and agents reading your docs.
-  </Card>
-  <Card
-    title="Contextual menu"
-    icon="bolt"
-    href="/agent-ready/contextual"
-  >
-    Give readers one-click access to Claude, ChatGPT, Cursor, and more.
-  </Card>
-  <Card
-    title="AI coding tools"
-    icon="wand-magic-sparkles"
-    href="/ai-tools/claude-code"
-  >
-    Set up Claude Code, Cursor, or Windsurf with Mintlify's skill.
-  </Card>
-</Columns>
+## Core functionality
 
-## Need inspiration?
+Datology curation combines multiple data-improvement techniques into repeatable
+workflows:
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+- **Quality filtering** separates high-signal examples from noisy or harmful data.
+- **Synthetic enhancement** creates useful variations of strong content.
+- **Deduplication and redundancy control** remove harmful repetition while preserving useful reinforcement.
+- **Task and domain relevance** emphasize data that matches customer training goals.
+- **Curriculum and sequencing** organize data so models learn more efficiently.
+- **Multilingual curation** extends curation benefits beyond English-only datasets.
+
+The output is a curated dataset plus the metadata needed to understand where it
+came from, which run produced it, and which runtime version was used.
+
+## What you can do from the docs
+
+<CardGroup cols={2}>
+  <Card title="Learn the vocabulary" icon="shapes" href="/concepts">
+    Understand recipes, datasets, curations, assets, Run IDs, Curation IDs, and versions.
+  </Card>
+  <Card title="Choose a recipe" icon="utensils" href="/curation/recipes">
+    Review the supported curation templates and their intended use.
+  </Card>
+  <Card title="Monitor runs" icon="list-check" href="/curation/monitor-and-cancel">
+    List curations, inspect task progress, and cancel running workflows.
+  </Card>
+  <Card title="Debug deeper" icon="bug" href="/operate/debugging-with-ddb">
+    Use `ddb` when normal status output is not enough.
+  </Card>
+</CardGroup>
+
+Start with [Quickstart](/quickstart) if you are setting up the platform for the
+first time. Start with [Curate data](/curation/overview) if Datology is already
+deployed and you need to run or inspect curations.

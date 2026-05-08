@@ -1,0 +1,92 @@
+---
+title: "Deployment environment variables"
+description: "Install-time variables used by deploy_datology.sh."
+icon: "list"
+---
+
+Set these variables before running `deploy_datology.sh`.
+
+## Required
+
+| Variable | Purpose |
+| --- | --- |
+| `DEPLOYMENT_PUBLIC_KEY` | SSH public key for deployment access and debugging. |
+| `CUSTOMER_NAME_PREFIX` | Lowercase customer identifier for stack naming and default domain generation. |
+| `VPC_SLASH_16_CIDR_BLOCK` | First two octets for new VPC CIDR allocation. Required when creating a new network. |
+
+## Common optional
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `AWS_DEFAULT_REGION` | AWS profile region | Deployment region. |
+| `DATOLOGY_STACK_VERSION` | Latest release | Stack templates and install assets version. |
+| `DATOLOGY_STACK_S3_PREFIX` | `datologyai-releases` | S3 prefix for stack version lookup. |
+| `RUNTIME_CONTAINER_IMAGE_TAG` | Release production version | Runtime image tag for curations. |
+| `HOSTED_ZONE_NAME` | `<customer>.accounts.datologyai.com` | Hosted zone used for service DNS. |
+| `STACK_NAME` | Generated | Complete stack name. |
+| `STACK_NAME_PREFIX` | Timestamp only | Prefix for generated stack name. |
+| `STACK_TAGS` | Empty | Space-separated key-value tags forwarded to resources. |
+| `SETUP_ONLY` | `false` | Pause after infrastructure setup for inspection. |
+| `INSTALL_DDB` | `false` | Install the `ddb` CLI wrapper on the CLI runner. |
+
+## Network
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `CREATE_NEW_NETWORK_STACK` | `true` | Create new VPC and network resources. |
+| `CREATE_NEW_EKS_CLUSTER` | `true` | Create a new EKS cluster. |
+| `CLI_RUNNER_HAS_PUBLIC_IP` | `true` | Attach a public IP to the CLI runner. |
+| `HAS_EXTERNAL_NETWORK_ACCESS` | `true` | Enable internet access from the VPC. |
+| `ALLOWED_SSH_CIDR` | `0.0.0.0/0` | CIDR allowed to SSH to installer and CLI runner instances. |
+| `ALLOWED_EKS_API_CIDR` | VPC CIDR when available | CIDR allowed to reach the EKS API. |
+
+## Existing network
+
+Use these when `CREATE_NEW_NETWORK_STACK=false`:
+
+- `EXISTING_VPC_ID`
+- `EXISTING_PRIVATE_SUBNET_AZ_A_ID`
+- `EXISTING_PRIVATE_SUBNET_AZ_B_ID`
+- `EXISTING_PRIVATE_SUBNET_AZ_C_ID`
+- `EXISTING_CLI_SUBNET_ID`
+- `EXISTING_TAILSCALE_ROUTERS_SECURITY_GROUP_ID`
+- `EXISTING_ALLOW_INBOUND_FROM_TAILSCALE_ID`
+- `EXISTING_VPC_ENDPOINTS_SECURITY_GROUP_ID`
+
+## Existing EKS
+
+Use these when `CREATE_NEW_EKS_CLUSTER=false`:
+
+- `EXISTING_EKS_CLUSTER_NAME`
+- `EXISTING_EKS_NODE_GROUP_ROLE_NAME`
+
+The deployment retrieves other EKS details from AWS.
+
+## IAM and permissions
+
+| Variable | Purpose |
+| --- | --- |
+| `POWER_USER_ROLE_ARN` | Optional role ARN for elevated access. |
+| `PERMISSION_BOUNDARY_POLICY_ARN` | Optional permissions boundary for created roles. |
+| `OIDC_SERVICE_TOKEN_ARN` | Optional custom OIDC provider creation hook. |
+
+## Buckets and images
+
+| Variable | Purpose |
+| --- | --- |
+| `ARTIFACTS_BUCKET_NAME` | Existing artifacts and customer datasets bucket. |
+| `ADDITIONAL_READ_ONLY_BUCKET_ARNS` | Extra read-only S3 access. Include bucket and object ARNs. |
+| `ADDITIONAL_READ_WRITE_BUCKET_ARNS` | Extra read-write S3 access. Include bucket and object ARNs. |
+| `FLYTE_WORKER_IMAGE_REPOSITORY` | Flyte worker image repository name. |
+| `SPARK_IMAGE_REPOSITORY` | Spark image repository name. |
+| `RAY_IMAGE_REPOSITORY` | Ray image repository name. |
+| `DB_ADMIN_IMAGE_REPOSITORY` | DB admin image repository name. |
+
+## Optional Curation Studio
+
+These are admin-scoped until Curation Studio is publicly documented:
+
+- `DEPLOY_CURATION_STUDIO`
+- `CURATION_STUDIO_IMAGE_REPOSITORY`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`

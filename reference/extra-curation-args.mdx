@@ -1,0 +1,466 @@
+---
+title: "Extra curation arguments"
+description: "Customer-facing JSON fields for --extra-curation-args-file."
+icon: "sliders"
+---
+
+`--extra-curation-args-file` points to a JSON object that is merged into a
+dataset registration or curation run.
+
+Use this page for customer-facing configuration fields. Advanced overrides
+should be used only when Datology recommends them for a specific deployment,
+recipe, or workload size.
+
+## Basic usage
+
+```bash
+datology new-curation \
+  --run-name stew-run \
+  --output-dataset-path s3://<bucket>/<output-prefix>/ \
+  --launch-plan wrapped_stew_001_from_commons_threadpool \
+  --extra-curation-args-file stew_args.json \
+  --pretty-preview
+```
+
+Preview the file before launching. Use the same file without
+`--pretty-preview` once the configuration is correct.
+
+`--extra-curation-args-file` is used in two places:
+
+- `datology new-curation`: passes recipe-specific curation inputs.
+- `datology add-dataset`: passes ingestion settings for dataset registration.
+
+## Wrapped Stew 001 arguments
+
+Wrapped Stew 001 uses source documents, target documents, token budget, export
+settings, and per-domain dataset selections.
+
+### Required top-level fields
+
+#### `source_documents`
+
+Required. Type: `list[IngestionSource]`.
+
+Source datasets available for curation. Names in this list are referenced by
+fields such as `web_dataset_names`, `code_dataset_names`, and
+`multilingual_dataset_names`.
+
+#### `target_documents`
+
+Required. Type: `list[IngestionSource]`.
+
+Target or evaluation datasets used for distribution matching and
+decontamination. Names in this list are referenced by fields such as
+`web_target_names` and `web_decontamination_target_names`.
+
+#### `target_output_tokens`
+
+Required. Type: `int`.
+
+Total output-token budget across domains.
+
+#### `export_format`
+
+Required. Type: `str`.
+
+Final export format. Currently, use `parquet`.
+
+#### `web_dataset_names`
+
+Required. Type: `list[str]`.
+
+Names from `source_documents` used for web curation.
+
+#### `web_target_names`
+
+Required. Type: `list[str]`.
+
+Names from `target_documents` used for web distribution fitting.
+
+#### `web_decontamination_target_names`
+
+Required. Type: `list[str]`.
+
+Names from `target_documents` used for web decontamination.
+
+### `IngestionSource`
+
+Use this object for each entry in `source_documents` and `target_documents`.
+
+#### `name`
+
+Required. Type: `str`.
+
+Stable identifier for the source. Other fields use this value to select
+datasets by name.
+
+#### `source_location`
+
+Required. Type: `str`.
+
+Raw source data path, usually an S3 prefix.
+
+#### `ingested_location`
+
+Optional. Type: `str`.
+
+Already-ingested data path. When this field is set, Datology skips ingestion
+for that source.
+
+#### `override_args`
+
+Required unless `ingested_location` is set. Type: `object`.
+
+Ingestion arguments for raw source data.
+
+### Ingestion `override_args`
+
+#### `text_column`
+
+Required. Type: `str`.
+
+Column containing text.
+
+#### `file_type`
+
+Optional. Type: `str`.
+
+Input file type. Currently, use `parquet`.
+
+#### `metadata_column_mapping`
+
+Optional. Type: `object`.
+
+Maps input columns to metadata fields retained for later export. Special
+metadata fields include `external_id` and `url`. Include `url` when using URL
+filtering.
+
+#### `max_row_size`
+
+Optional. Type: `int`.
+
+Drops rows larger than this many bytes before processing.
+
+### Export settings
+
+```json
+{
+  "export_format": "parquet",
+  "export_args": {
+    "metadata_fields": ["schema", "synthetic_model", "external_id", "url"]
+  }
+}
+```
+
+`export_args.metadata_fields` controls extra fields included in final output.
+Supported special fields include:
+
+- `schema`: original source name from `source_documents`.
+- `synthetic_model`: Hugging Face model path used to create a synthetic example, or null.
+
+You can also include metadata field names created through
+`metadata_column_mapping`.
+
+## Optional domain fields
+
+### `output_datasets_path`
+
+Optional. Type: `str` or `null`.
+
+Promotes or moves final curated datasets to this location when set.
+
+### `tokenizer_name`
+
+Optional. Type: `str`.
+
+Tokenizer used for token counting. Defaults to `EleutherAI/gpt-neox-20b`.
+
+### `code_dataset_names`
+
+Optional. Type: `list[str]` or `null`.
+
+Source names for code curation. Empty or null skips code curation.
+
+### `math_dataset_names`
+
+Optional. Type: `list[str]` or `null`.
+
+Source names for math curation. Empty or null skips math curation.
+
+### `multilingual_dataset_names`
+
+Optional. Type: `dict[str, list[str]]` or `null`.
+
+Maps language names or language codes to source names. Empty or null skips
+multilingual curation.
+
+### `multilingual_target_names`
+
+Optional. Type: `list[str]` or `null`.
+
+Target datasets for multilingual mining. Defaults to `web_target_names`.
+
+### `code_included_languages`
+
+Optional. Type: `list[str]` or `null`.
+
+Programming languages to include in code curation.
+
+### `code_excluded_languages`
+
+Optional. Type: `list[str]` or `null`.
+
+Programming languages to exclude from code curation.
+
+### Supported multilingual languages
+
+Use either the language name or the code.
+
+```text
+Arabic: ar
+Bengali: bn
+Dutch: nl
+Filipino: tl
+French: fr
+German: de
+Hindi: hi
+Indonesian: id
+Italian: it
+Japanese: ja
+Korean: ko
+Mandarin: zh
+Marathi: mr
+Portuguese: pt
+Russian: ru
+Spanish: es
+Tamil: ta
+Telugu: te
+Urdu: ur
+Vietnamese: vi
+```
+
+Example:
+
+```json
+{
+  "multilingual_dataset_names": {
+    "es": ["fineweb"],
+    "fr": ["fineweb", "dclm"]
+  }
+}
+```
+
+## Model selection fields
+
+Each domain can override the models used for rephrasing or translation. Omit a
+field, or set it to `null`, to use recipe defaults.
+
+### `web_rephrase_models`
+
+Optional. Web rephrasing models.
+
+### `code_beyondweb_rephrase_models`
+
+Optional. Code BeyondWeb rephrasing models.
+
+### `code_synthetic_rephrase_models`
+
+Optional. Synthetic code rephrasing models.
+
+### `math_rephrase_models`
+
+Optional. Math rephrasing models.
+
+### `multilingual_translation_models`
+
+Optional. Multilingual translation models.
+
+### Available model names
+
+- `gpt-oss-20b`
+- `olmo2-7b`
+- `olmo3-7b-instruct`
+- `phi4`
+- `mistral-7b-v3`
+- `ministral-3-8b-instruct`
+- `qwen2.5-coder-7b-instruct`
+- `qwen3-8b`
+- `qwen3-5-9b`
+- `gpt-oss-120b`
+- `qwen3-235b-a22b-inst-2507-fp8`
+
+Some models require specific GPU capacity. Confirm availability before using
+large-model overrides.
+
+## Filtering and post-processing
+
+### `postprocess_synthetic_code`
+
+Optional. Type: `bool`.
+
+Applies heuristic filters and cleaning to synthetic code. Requires code
+datasets to provide a language column.
+
+### `global_dedup_max_duplicates_per_key`
+
+Optional. Type: `int` or `null`.
+
+Maximum duplicate documents per deduplication key. Null disables global dedup.
+Global deduplication can produce fewer output tokens than requested because it
+removes documents after duplicate limits are applied.
+
+### `format_markdown`
+
+Optional. Type: `bool`.
+
+Applies standard formatting to markdown documents, including table compaction.
+
+### `filter_urls`
+
+Optional. Type: `list[str]` or `null`.
+
+URL blocklist keywords or regexes. Regex entries use `re:<target_regex>`.
+Requires URL metadata.
+
+### `min_token_length`
+
+Optional. Type: `int` or `null`.
+
+Removes input rows shorter than this token length before other processing.
+
+## Advanced cluster overrides
+
+Use `override_args.cluster_config_args` only with Datology guidance. These
+fields tune Ray cluster sizing and GPU partitioning for rephrase and
+translation jobs.
+
+```json
+{
+  "override_args": {
+    "cluster_config_args": {
+      "gpu_num_partitions": 8,
+      "rephrase_num_workers": 16,
+      "rephrase_machine_type": "g6e.xlarge"
+    }
+  }
+}
+```
+
+### `gpu_num_partitions`
+
+Optional. Number of GPU partitions for rephrase jobs.
+
+### `rephrase_num_workers`
+
+Optional. Number of Ray workers for rephrasing.
+
+### `rephrase_machine_type`
+
+Optional. Machine type for rephrase workers.
+
+## Example Wrapped Stew 001 file
+
+```json
+{
+  "source_documents": [
+    {
+      "name": "fineweb",
+      "source_location": "s3://customer-data/raw/fineweb/",
+      "override_args": {
+        "text_column": "text",
+        "file_type": "parquet",
+        "metadata_column_mapping": {
+          "id": "external_id",
+          "url": "url",
+          "source_quality": "source_quality"
+        },
+        "max_row_size": 1000000
+      }
+    }
+  ],
+  "target_documents": [
+    {
+      "name": "customer_eval",
+      "source_location": "s3://customer-data/targets/eval/",
+      "override_args": {
+        "text_column": "text",
+        "file_type": "parquet"
+      }
+    }
+  ],
+  "target_output_tokens": 1000000000,
+  "export_format": "parquet",
+  "export_args": {
+    "metadata_fields": ["schema", "synthetic_model", "external_id", "url"]
+  },
+  "web_dataset_names": ["fineweb"],
+  "web_target_names": ["customer_eval"],
+  "web_decontamination_target_names": ["customer_eval"],
+  "tokenizer_name": "EleutherAI/gpt-neox-20b",
+  "filter_urls": ["example.com/private", "re:.*internal.*"],
+  "min_token_length": 32,
+  "format_markdown": false
+}
+```
+
+## Dataset registration arguments
+
+`datology add-dataset` also accepts `--extra-curation-args-file`.
+
+```bash
+datology add-dataset \
+  --run-name desired-dataset-name \
+  --input-dataset-path s3://customer-data/raw/fineweb/ \
+  --output-dataset-path s3://customer-data/registered/fineweb/ \
+  --extra-curation-args-file dataset_args.json
+```
+
+Use these fields in the dataset registration file.
+
+### `name`
+
+Required. Source identifier, such as `dclm` or `fineweb`.
+
+### `source_location`
+
+Required. Raw source data path.
+
+### `override_args.text_column`
+
+Required. Text column in the source data.
+
+### `override_args.file_type`
+
+Optional. Input file type. Currently, use `parquet`.
+
+### `override_args.metadata_column_mapping`
+
+Optional. Metadata fields retained for later export.
+
+### `override_args.max_row_size`
+
+Optional. Drops rows larger than this many bytes.
+
+Example:
+
+```json
+{
+  "name": "fineweb",
+  "source_location": "s3://customer-data/raw/fineweb/",
+  "override_args": {
+    "text_column": "text",
+    "file_type": "parquet",
+    "metadata_column_mapping": {
+      "id": "external_id",
+      "url": "url"
+    },
+    "max_row_size": 1000000
+  }
+}
+```
+
+## Stew 2 web and multilingual
+
+Stew 2 web and multilingual configuration is based on the Wrapped Stew 001
+shape. Datology will provide a deployment-specific configuration when this
+recipe is enabled.

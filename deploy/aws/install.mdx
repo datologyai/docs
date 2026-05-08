@@ -1,0 +1,72 @@
+---
+title: "Install"
+description: "Run the released Datology deployment path."
+icon: "download"
+---
+
+Use the released deployment scripts provided by Datology. The public entry
+point is:
+
+```bash
+./deploy_datology.sh
+```
+
+## Required environment
+
+For a new-network deployment:
+
+```bash
+export AWS_PROFILE="<customer-aws-profile>"
+export DEPLOYMENT_PUBLIC_KEY="ssh-rsa AAAA..."
+export CUSTOMER_NAME_PREFIX="<customer-name>"
+export VPC_SLASH_16_CIDR_BLOCK="10.50"
+```
+
+`CUSTOMER_NAME_PREFIX` must be lowercase alphanumeric or dashes.
+
+## Common optional environment
+
+```bash
+export AWS_DEFAULT_REGION="us-east-1"
+export DATOLOGY_STACK_VERSION="<stack-version>"
+export RUNTIME_CONTAINER_IMAGE_TAG="<runtime-version>"
+export HOSTED_ZONE_NAME="<customer-domain>"
+export STACK_TAGS="Environment=prod Team=platform"
+export INSTALL_DDB=true
+```
+
+Use existing network or EKS variables when Datology must deploy into
+customer-managed infrastructure.
+
+## Run the installer
+
+```bash
+./deploy_datology.sh
+```
+
+The script prints the resolved stack version, runtime image tag, network
+settings, template URLs, bucket names, and CloudFormation parameters before it
+asks for confirmation.
+
+## Expected phases
+
+1. Validate required environment variables.
+2. Resolve release artifacts from S3.
+3. Validate or allocate network CIDRs.
+4. Create the CloudFormation parent stack.
+5. Start the Helm installer instance.
+6. Install the Kubernetes product stack.
+7. Start and configure the CLI runner.
+8. Run smoke tests and CLI validation.
+
+## Logs
+
+Installer and CLI runner logs are written locally and copied to the job logs
+bucket:
+
+- `/var/log/helm-installer.log`
+- `/var/log/cli-runner.log`
+- `/var/log/cli-runner-docker-install.log`
+
+Use [deployment troubleshooting](/deploy/aws/troubleshooting) if the CloudFormation
+stack fails or a resource does not signal completion.

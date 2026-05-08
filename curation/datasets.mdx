@@ -1,0 +1,78 @@
+---
+title: "Datasets"
+description: "Register, list, describe, and delete datasets."
+icon: "table"
+---
+
+A dataset is customer-provided or Datology-produced data stored at an object
+storage path. Register datasets before using them in curations.
+
+## Register a dataset
+
+```bash
+datology add-dataset \
+  --run-name <dataset-run-name> \
+  --input-dataset-path s3://<bucket>/<source-prefix>/ \
+  --output-dataset-path s3://<bucket>/<registered-output-prefix>/
+```
+
+`add-dataset` launches a registration workflow. It is not a synchronous record
+write. Wait for the registration run to complete before treating the dataset as
+curatable.
+
+You can pass extra workflow arguments through a JSON file or JSON string:
+
+```bash
+datology add-dataset \
+  --input-dataset-path s3://<bucket>/<source-prefix>/ \
+  --output-dataset-path s3://<bucket>/<registered-output-prefix>/ \
+  --extra-curation-args-file args.json
+```
+
+For dataset registration, the JSON file describes the source name, source
+location, and ingestion arguments such as text column, file type, metadata
+column mapping, and maximum row size. See
+[Extra curation arguments](/reference/extra-curation-args#dataset-registration-arguments).
+
+## List datasets
+
+```bash
+datology list-datasets
+datology list-datasets --limit 50
+datology list-datasets --all
+datology list-datasets --domain web
+datology list-datasets --domain target
+```
+
+By default, the CLI shows active or complete dataset runs. Use `--all` to show
+all statuses.
+
+Use `--domain` to filter dataset registration runs by purpose.
+
+- `web`: source datasets used for curation.
+- `target`: target or evaluation datasets used for distribution matching,
+  scoring, or decontamination.
+
+Dataset list output can show these dataset type labels:
+
+- `Parquet`
+- `JSONL`
+- `Unknown`
+
+## Describe a dataset
+
+```bash
+datology describe-dataset <run_id>
+```
+
+The output shows the associated curation execution status, task progress, and
+ingestion summary when available.
+
+## Delete a dataset
+
+```bash
+datology delete-dataset <run_id>
+```
+
+This marks the dataset run as purged and can terminate an in-flight workflow.
+It does not delete data from object storage.

@@ -1,0 +1,46 @@
+---
+title: "Storage and buckets"
+description: "How Datology uses object storage for assets, logs, models, and customer data."
+icon: "database"
+---
+
+Datology stores durable data in object storage and stores metadata in the asset
+tracker.
+
+## Bucket categories
+
+| Bucket category | Purpose |
+| --- | --- |
+| Asset buckets | Store development, staging, and production assets. |
+| Job logs bucket | Stores Spark, Ray, installer, and CLI runner logs. |
+| Code artifacts bucket | Stores workflow code artifacts used by execution. |
+| Models/artifacts bucket | Stores staged models, tokenizers, Hugging Face datasets, and customer-provided artifacts. |
+| Release artifacts | Stores Datology deployment templates, CLI PEX files, and runtime assets. |
+
+The generated `datology_config.json` points the CLI and workflows at the
+customer deployment's storage locations.
+
+## Customer-provided data
+
+Use `ARTIFACTS_BUCKET_NAME` for the default customer artifact bucket:
+
+```bash
+export ARTIFACTS_BUCKET_NAME="<bucket-name>"
+```
+
+Grant access to additional customer buckets with comma-separated ARN lists:
+
+```bash
+export ADDITIONAL_READ_ONLY_BUCKET_ARNS="arn:aws:s3:::source,arn:aws:s3:::source/*"
+export ADDITIONAL_READ_WRITE_BUCKET_ARNS="arn:aws:s3:::target,arn:aws:s3:::target/*"
+```
+
+Include both the bucket ARN and object ARN for each bucket.
+
+## Asset metadata
+
+The asset tracker records the paths, versions, run metadata, lineage, and reuse
+information for assets. It does not replace object storage.
+
+`datology delete-dataset` marks a dataset run as purged and can terminate an
+in-flight workflow run. It does not delete stored objects from S3.

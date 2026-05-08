@@ -1,0 +1,58 @@
+---
+title: "Runtime images and versions"
+description: "Understand stack versions, runtime image tags, and registered workflow entry points."
+icon: "tag"
+---
+
+Datology has two version concepts that operators should keep separate.
+
+## Stack version
+
+The stack version identifies the released CloudFormation templates, install
+scripts, Kubernetes product stack templates, and CLI artifacts used during
+deployment.
+
+Set a specific stack version with:
+
+```bash
+export DATOLOGY_STACK_VERSION="<stack-version>"
+```
+
+When unset, the deployment resolves the latest released stack version from the
+release bucket.
+
+## Runtime image tag
+
+The runtime image tag identifies the Spark, Ray, Flyte worker, and DB admin
+container images used by curations.
+
+```bash
+export RUNTIME_CONTAINER_IMAGE_TAG="<runtime-version>"
+```
+
+The generated `datology_config.json` stores this as `default_version`. Future
+curations use that default unless a command passes `--version`.
+
+## Workflow entry point registration
+
+Curations launch registered workflow entry points. A runtime image tag is only
+usable for a curation after the relevant entry points are registered.
+
+Use:
+
+```bash
+datology upgrade-launchplans --version <runtime-version>
+```
+
+This is an operator action. It requires asset tracker access, Kubernetes
+access, and ECR access.
+
+## Identify the version used by a run
+
+Use the output path with `datology info`:
+
+```bash
+datology info s3://<bucket>/<asset-path>/
+```
+
+The output includes the execution version, execution ID, Run ID, and run name.

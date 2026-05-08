@@ -1,0 +1,82 @@
+---
+title: "Deployment overview"
+description: "High-level flow for installing and validating a Datology deployment."
+icon: "server"
+---
+
+Datology is deployed into customer-owned infrastructure and operated by the
+customer platform team. The deployment flow creates the infrastructure layer,
+installs the Datology product stack, prepares the CLI environment, and validates
+that curations can run.
+
+## Deployment flow
+
+```text
+Scope the environment
+  -> prepare cloud prerequisites
+  -> run the released installer
+  -> install the product stack
+  -> configure the CLI runner
+  -> validate services and workflow entry points
+  -> launch a smoke-test curation
+```
+
+## 1. Scope the environment
+
+Before installation, decide:
+
+- Which cloud account and region will host Datology.
+- Whether Datology creates new networking or uses existing network resources.
+- Whether Datology creates a new Kubernetes cluster or uses an existing one.
+- How operators will access the CLI runner and cluster.
+- Which object-storage buckets Datology can read from and write to.
+- Which runtime version should be the default for new curations.
+
+## 2. Prepare prerequisites
+
+The operator prepares cloud credentials, DNS, network inputs, SSH access, and
+bucket permissions. These inputs are platform-specific.
+
+For AWS, start with [AWS prerequisites](/deploy/aws/prerequisites).
+
+## 3. Run the installer
+
+The released installer creates or connects to infrastructure resources, then
+starts the product-stack installation. The install should use released Datology
+artifacts rather than local or unofficial release flows.
+
+For AWS, use [Install](/deploy/aws/install).
+
+## 4. Configure the CLI environment
+
+The deployment prepares a CLI runner with the generated configuration needed to
+operate Datology:
+
+- Datology config file
+- Workflow orchestration endpoint config
+- Asset tracker database connection
+- Kubernetes access for operator actions
+
+Customers use this CLI environment to register datasets, launch curations,
+inspect assets, and perform runtime upgrades.
+
+## 5. Validate the deployment
+
+Validation should confirm:
+
+- Kubernetes access works.
+- Datology product services are healthy.
+- The workflow orchestration endpoint is reachable.
+- The asset tracker is reachable.
+- Workflow entry points are registered for the runtime version.
+- The CLI can list recipes, datasets, and curations.
+- A smoke-test workflow or small curation can complete.
+
+For AWS, follow [Post-install validation](/deploy/aws/post-install-validation).
+
+## Platform guides
+
+<Card title="AWS deployment" icon="cloud" href="/deploy/aws/overview">
+  Install Datology into an AWS account using the released CloudFormation and
+  Kubernetes product-stack flow.
+</Card>

@@ -1,0 +1,84 @@
+---
+title: "Recipes"
+description: "Supported curation templates and how to choose one."
+icon: "utensils"
+---
+
+A recipe is a named, supported curation template. It defines the workflow entry
+point, expected inputs, source mixing, budgets, and constraints for a curation.
+
+List recipes from the CLI runner:
+
+```bash
+datology list-curation-recipes
+```
+
+## Supported recipes
+
+| Recipe | Launch plan | Intended use |
+| --- | --- | --- |
+| `web_multilingual_stew` | `web_multilingual_stew_from_commons_threadpool` | Web and multilingual curation across quality tiers, with optional per-language translation. |
+| `stew_001` | `wrapped_stew_001_from_commons_threadpool` | Full stew combining web, code, math, and multilingual curation into one workflow. |
+
+## `web_multilingual_stew`
+
+Use this recipe for web and multilingual curation without code or math.
+
+Recommended token range:
+
+```text
+60B - 10T tokens
+```
+
+Mixing sources include:
+
+- High-quality score-filtered web data
+- Medium-quality web data
+- Embedding-mined web data
+- Rephrased synthetic web data
+- Per-language translated data
+
+Notes:
+
+- Input web tokens should be at least 2x total web output tokens after dedup.
+- Multilingual runs require native source tokens and English tokens.
+- Rephrasing can use the registered synthetic models staged in the customer artifact bucket.
+
+## `stew_001`
+
+Use this recipe when the target output combines web, code, math, and
+multilingual sources.
+
+Recommended token range:
+
+```text
+60B - 10T tokens
+```
+
+Mixing sources include:
+
+- High-quality, medium-quality, mined, and synthetic web data
+- BeyondWeb code rephrasing
+- Synthetic code rephrasing
+- Curated math data
+- Per-language translated data
+
+Notes:
+
+- Supports inline ingestion through `ingest_args`.
+- Multilingual prefilter percentile defaults are recipe-defined.
+- Code curation supports included and excluded language filters.
+
+For customer-facing configuration fields such as source documents, target
+documents, token budgets, domain dataset names, model overrides, URL filters,
+deduplication, and cluster sizing overrides, see
+[Extra curation arguments](/reference/extra-curation-args).
+
+## Runtime compatibility
+
+Recipes map to registered workflow entry points. If a recipe is not registered
+for the runtime version you selected, register the version with:
+
+```bash
+datology upgrade-launchplans --version <runtime-version>
+```

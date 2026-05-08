@@ -1,0 +1,49 @@
+---
+title: "Architecture"
+description: "How the customer-deployed Datology stack is organized."
+icon: "diagram-project"
+---
+
+Datology is deployed into the customer's AWS account. The deployment has two
+layers: AWS infrastructure and the Kubernetes product stack.
+
+## Infrastructure layer
+
+The CloudFormation deployment creates or connects to the AWS resources Datology
+needs:
+
+- VPC, subnets, security groups, and VPC endpoints
+- EKS cluster and access entries
+- IAM roles and policies for installers, workers, Spark, Ray, and the CLI runner
+- S3 buckets for assets, logs, code artifacts, and release assets
+- DNS records and certificates for service endpoints
+- EC2 instances for installation and CLI operations
+
+## Kubernetes product stack
+
+The product stack runs on EKS and installs the services used by curations:
+
+- Workflow orchestration
+- PostgreSQL databases for orchestration and asset tracking
+- Asset tracker service and metadata schema
+- Spark Operator
+- KubeRay
+- Karpenter, YuniKorn, and Kueue for scheduling
+- Monitoring and logging integrations
+- AWS load balancer controller
+
+## Curation path
+
+```text
+Customer operator
+  -> datology CLI on the CLI runner
+  -> recipe, dataset, version, and output path
+  -> registered workflow entry point
+  -> Spark and Ray jobs on EKS
+  -> object storage artifacts
+  -> asset tracker metadata
+```
+
+The CLI is the supported customer interface. You may see Flyte, Spark, Ray,
+Kubernetes, and asset-tracker terms in logs and status output, but the primary
+customer workflow is still dataset registration and curation through `datology`.

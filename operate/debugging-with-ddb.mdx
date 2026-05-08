@@ -1,0 +1,50 @@
+---
+title: "Debugging with ddb"
+description: "Use Datology Debugger when normal curation status is not enough."
+icon: "bug"
+---
+
+`ddb` is the Datology Debugger. Use it to inspect curation runs, tasks, Spark
+jobs, Ray jobs, dashboards, and logs when `datology show-curation` does not
+provide enough detail.
+
+## Basic usage
+
+```bash
+ddb <curation_id>
+```
+
+The Curation ID is the workflow execution identifier returned by
+`datology new-curation`.
+
+## Options
+
+```bash
+ddb <curation_id> \
+  --flyte-domain development \
+  --spark-ui-local-port 8080
+```
+
+| Option | Purpose |
+| --- | --- |
+| `--flyte-domain` | Workflow domain. Defaults to `development`. |
+| `--spark-ui-local-port` | Local port used for Spark UI port-forwarding. Defaults to `8080`. |
+| `--db-uri` | Override database URI. Defaults to `ASSET_TRACKER_PROD_URI`. |
+| `--logs-prefix` | Comma-separated S3 prefixes to search for logs. |
+
+## When to use `ddb`
+
+Use `ddb` when you need to:
+
+- Find the failed task inside a large curation.
+- Open the Spark UI for a running Spark job.
+- Open the Ray dashboard for a running Ray job.
+- Find Spark or Ray logs after a job completes.
+- Inspect threadpool-mode workflow node hierarchy.
+- Collect detailed debugging context for Datology support.
+
+For basic status, start with:
+
+```bash
+datology show-curation <curation_id>
+```

@@ -1,0 +1,77 @@
+---
+title: "Deployment troubleshooting"
+description: "Common install-time and validation failures."
+icon: "triangle-exclamation"
+---
+
+Start with the failing phase: release lookup, CloudFormation, Helm installer,
+CLI runner, or post-install validation.
+
+## Release bucket access fails
+
+Confirm the deploying identity can read the release bucket and stack prefix.
+
+```bash
+aws s3 ls s3://<release-bucket>/<release-prefix>/
+```
+
+If the bucket is inaccessible, confirm AWS profile, region, and Datology
+release access.
+
+## Hosted zone not found
+
+The installer looks up the hosted zone for the customer subdomain. Confirm
+`CUSTOMER_NAME_PREFIX` or `HOSTED_ZONE_NAME` points at an existing Route53
+hosted zone.
+
+## CIDR validation fails
+
+For new-network installs, choose a `VPC_SLASH_16_CIDR_BLOCK` that does not
+overlap existing VPCs or reserved network ranges.
+
+## EKS access fails
+
+Check that the cluster exists, the CLI runner or installer role has EKS access,
+and `KUBECONFIG` points to the generated kubeconfig.
+
+```bash
+aws eks list-clusters
+kubectl get nodes
+```
+
+## Helm installer fails
+
+Inspect:
+
+```bash
+/var/log/helm-installer.log
+s3://<environment>-datologyai-job-logs/helm-installer/
+```
+
+The most common causes are missing AWS permissions, private-network endpoint
+gaps, image pull failures, or Kubernetes resources that did not become ready.
+
+## CLI runner fails
+
+Inspect:
+
+```bash
+/var/log/cli-runner.log
+/var/log/cli-runner-docker-install.log
+s3://<environment>-datologyai-job-logs/cli-runner/
+```
+
+Confirm the runner can download the CLI PEX, update kubeconfig, reach the asset
+tracker service, and run `datology --help`.
+
+## Launch plans missing
+
+If a curation reports that a workflow entry point is not registered at the
+requested version, register it:
+
+```bash
+datology upgrade-launchplans --version <runtime-version>
+```
+
+Use `--auto-upgrade` on `new-curation` only when automatic registration is
+approved for the environment.

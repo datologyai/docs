@@ -1,0 +1,77 @@
+---
+title: "Network and access"
+description: "Choose the supported network, EKS, and CLI runner access pattern."
+icon: "route"
+---
+
+Datology can create new AWS networking or use existing customer resources.
+Choose the pattern before running `deploy_datology.sh`.
+
+## New network and new EKS
+
+This is the simplest path for a new deployment.
+
+```bash
+export CREATE_NEW_NETWORK_STACK=true
+export CREATE_NEW_EKS_CLUSTER=true
+export VPC_SLASH_16_CIDR_BLOCK="10.50"
+```
+
+The installer validates CIDR conflicts and creates the VPC, subnets, EKS
+cluster, and required access rules.
+
+## Existing network or existing EKS
+
+Use existing resources when Datology must run inside a customer-managed network
+or cluster.
+
+```bash
+export CREATE_NEW_NETWORK_STACK=false
+export EXISTING_VPC_ID="vpc-..."
+export EXISTING_PRIVATE_SUBNET_AZ_A_ID="subnet-..."
+export EXISTING_PRIVATE_SUBNET_AZ_B_ID="subnet-..."
+export EXISTING_PRIVATE_SUBNET_AZ_C_ID="subnet-..."
+export EXISTING_CLI_SUBNET_ID="subnet-..."
+```
+
+For an existing EKS cluster:
+
+```bash
+export CREATE_NEW_EKS_CLUSTER=false
+export EXISTING_EKS_CLUSTER_NAME="<cluster-name>"
+export EXISTING_EKS_NODE_GROUP_ROLE_NAME="<node-role-name>"
+```
+
+The existing EKS cluster must be in the same VPC as the network resources used
+by Datology.
+
+## CLI runner access
+
+The CLI runner is the operational host for customer CLI commands.
+
+| Variable | Meaning |
+| --- | --- |
+| `CLI_RUNNER_HAS_PUBLIC_IP` | Whether the CLI runner gets a public IP. Defaults to `true`. |
+| `ALLOWED_SSH_CIDR` | CIDR allowed to SSH to the CLI runner and installer instances. |
+| `ALLOWED_EKS_API_CIDR` | CIDR allowed to reach the EKS API when needed. |
+
+Set CIDRs narrowly for production deployments.
+
+## External network access
+
+`HAS_EXTERNAL_NETWORK_ACCESS` controls whether the deployment enables internet
+access from the VPC.
+
+```bash
+export HAS_EXTERNAL_NETWORK_ACCESS=false
+```
+
+Private deployments rely on VPC endpoints for AWS APIs and require more careful
+validation. Confirm S3, ECR, EKS, STS, Secrets Manager, CloudWatch, EC2, and
+CloudFormation access before expecting curations to run.
+
+## Tailscale and private access
+
+Some deployments use Tailscale or other private access patterns to reach the
+CLI runner and cluster resources. Confirm the supported access pattern with
+Datology before publishing the runbook for a production customer.

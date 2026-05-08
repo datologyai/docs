@@ -1,72 +1,91 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "theme": "maple",
+  "name": "DatologyAI Docs",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#2B61F1",
+    "light": "#7197FC",
+    "dark": "#2556D6"
   },
   "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/datology-logo.svg",
+    "dark": "/logo/datology-logo.svg"
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get started",
             "pages": [
               "index",
               "quickstart",
-              "development"
+              "concepts",
+              "architecture"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Curate data",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "curation/overview",
+              "curation/recipes",
+              "curation/datasets",
+              "curation/preview",
+              "curation/launch",
+              "curation/monitor-and-cancel",
+              "curation/outputs-and-assets",
+              "curation/dependencies"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Deployment",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/components",
-              "essentials/reusable-snippets"
+              "deploy/overview",
+              {
+                "group": "AWS",
+                "pages": [
+                  "deploy/aws/overview",
+                  "deploy/aws/prerequisites",
+                  "deploy/aws/network-and-access",
+                  "deploy/aws/storage-and-buckets",
+                  "deploy/aws/compute-and-scheduling",
+                  "deploy/aws/runtime-images-and-versions",
+                  "deploy/aws/install",
+                  "deploy/aws/cli-runner",
+                  "deploy/aws/post-install-validation",
+                  "deploy/aws/upgrades",
+                  "deploy/aws/security-and-secrets",
+                  "deploy/aws/observability",
+                  "deploy/aws/troubleshooting"
+                ]
+              }
             ]
           },
           {
-            "group": "Agent ready",
+            "group": "Operate",
             "pages": [
-              "agent-ready/prompt",
-              "agent-ready/visibility",
-              "agent-ready/contextual",
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+              "operate/versioning",
+              "operate/debugging-with-ddb",
+              "operate/job-logs",
+              "operate/common-failures"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Reference",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "reference/cli",
+              "reference/extra-curation-args",
+              "reference/datology-config",
+              "reference/deployment-environment-variables",
+              "reference/glossary"
+            ]
+          },
+          {
+            "group": "Release notes",
+            "pages": [
+              "release-notes/changelog"
             ]
           }
         ]
@@ -75,52 +94,37 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "DatologyAI",
+          "href": "https://www.datologyai.com",
+          "icon": "house"
         }
       ]
     }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@datologyai.com"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
+    ]
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "linkedin": "https://linkedin.com/company/datologyai",
+      "x": "https://x.com/datologyai"
     }
   }
 }

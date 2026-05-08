@@ -1,0 +1,54 @@
+---
+title: "Monitor and cancel"
+description: "List curations, inspect status, and cancel running work."
+icon: "list-check"
+---
+
+Use the curation ID returned by `new-curation` to inspect or cancel a run.
+
+## List curations
+
+```bash
+datology list-curations
+datology list-curations --limit 50
+datology list-curations --show-cron-jobs
+```
+
+The output includes Curation ID, start time, and overall status.
+
+## Show one curation
+
+```bash
+datology show-curation <curation_id>
+```
+
+When available, `show-curation` also displays task-level progress.
+
+Overall statuses include:
+
+- `PENDING`
+- `RUNNING`
+- `COMPLETED`
+- `FAILED`
+- `CANCELLED`
+- `NOT_FOUND`
+
+Task statuses include:
+
+- `NOT_STARTED`
+- `IN_PROGRESS`
+- `COMPLETED`
+- `REUSED`
+- `FAILED`
+
+## Cancel a run
+
+```bash
+datology cancel-curation <curation_id>
+```
+
+Only active curations can be cancelled. Completed, failed, cancelled, or
+missing curations cannot be cancelled.
+
+Use [debugging with ddb](/operate/debugging-with-ddb) when the status does not
+explain why a run is stuck or failed.

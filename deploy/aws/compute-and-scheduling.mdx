@@ -1,0 +1,40 @@
+---
+title: "Compute and scheduling"
+description: "How Spark, Ray, node pools, and queues fit together."
+icon: "microchip"
+---
+
+Curations run distributed processing jobs on EKS. Datology uses Spark and Ray
+depending on the workload.
+
+## Compute frameworks
+
+| Framework | Used for |
+| --- | --- |
+| Spark | Large dataframe-style processing, joins, filtering, exports, and other batch operations. |
+| Ray | Distributed map-style processing, embedding, model-backed transformations, and GPU-heavy workloads. |
+
+## Node pools
+
+Node pools define the available compute. They can be provisioned by Karpenter
+or configured as static EKS node groups.
+
+The cluster config controls:
+
+- Node pool names
+- Instance families or instance types
+- CPU, memory, GPU, and ephemeral storage limits
+- Spark queue capacity
+- Ray queue capacity
+
+## Scheduling
+
+Spark and Ray use different scheduling paths:
+
+- Spark jobs use YuniKorn queues.
+- Ray jobs use Kueue queues.
+- Karpenter can add nodes when the selected node pool supports it.
+
+For production deployments, treat compute sizing as part of customer scoping.
+Large curations can fail or queue for a long time when the cluster does not
+have enough CPU, memory, GPU, disk, or queue capacity.

@@ -1,0 +1,69 @@
+---
+title: "Versioning"
+description: "How runtime versions and workflow registration affect curations."
+icon: "tags"
+---
+
+Curations run against a runtime version. The runtime version identifies the
+container images and workflow entry points used by execution.
+
+## Default version
+
+The generated `datology_config.json` contains `default_version`. When a command
+does not pass `--version`, the CLI uses that default.
+
+```bash
+datology new-curation \
+  --output-dataset-path s3://<bucket>/<output-prefix>/ \
+  --launch-plan web_multilingual_stew_from_commons_threadpool
+```
+
+## Explicit version
+
+Use `--version` to run against a specific runtime version.
+
+```bash
+datology new-curation \
+  --output-dataset-path s3://<bucket>/<output-prefix>/ \
+  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --version <runtime-version>
+```
+
+## `latest`
+
+When the configured default is `latest`, the CLI resolves it to the concrete
+runtime image tag for the invocation. Prefer concrete version tags for
+production runbooks.
+
+## Missing workflow entry point
+
+If the selected workflow entry point is not registered for the resolved
+version, the CLI reports the missing launch plan and can prompt for
+registration.
+
+Register versions directly as an operator:
+
+```bash
+datology upgrade-launchplans --version <runtime-version>
+```
+
+For single-command automatic registration:
+
+```bash
+datology new-curation \
+  --output-dataset-path s3://<bucket>/<output-prefix>/ \
+  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --version <runtime-version> \
+  --auto-upgrade
+```
+
+Use `--auto-upgrade` only when the environment allows operators to register
+workflow entry points during curation launch.
+
+## Inspect a completed run version
+
+```bash
+datology info s3://<bucket>/<asset-path>/
+```
+
+The output includes the execution version used to produce the asset.

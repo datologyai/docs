@@ -1,0 +1,74 @@
+---
+title: "Datology config"
+description: "Customer-visible fields in datology_config.json."
+icon: "file-code"
+---
+
+`datology_config.json` is generated during deployment and copied to the CLI
+runner.
+
+```bash
+export DATOLOGY_CONFIG_PATH=/home/ubuntu/.config/datology_config.json
+```
+
+## Resolution order
+
+The config loader resolves configuration in this order:
+
+1. `DATOLOGY_CONFIG_JSON`
+2. `DATOLOGY_CONFIG_PATH`
+3. `./config/config.json`
+
+`DATOLOGY_CONFIG_JSON` is internal runtime state injected into workflow pods.
+Customer operators should use `DATOLOGY_CONFIG_PATH`.
+
+## Top-level fields
+
+| Field | Purpose |
+| --- | --- |
+| `default_version` | Runtime version used by CLI commands when `--version` is not supplied. |
+| `storage_config` | Object storage locations for assets, logs, code artifacts, and models. |
+| `image_config` | Runtime image registry and image names. |
+| `kubernetes_cluster_config` | Cluster name and Spark/Ray capacity config. |
+| `scheduler_config` | Job queue mapping and scheduler queue definitions. |
+
+## `storage_config`
+
+Important fields:
+
+- `domain_to_bucket_mapping`
+- `spark_job_logs_bucket_name`
+- `code_artifacts_bucket`
+- `models_bucket_name`
+
+`models_bucket_name` is the default destination for `register-model`,
+`register-tokenizer`, and staged external assets.
+
+## `image_config`
+
+Important fields:
+
+- `base_url`
+- `registry_account_id`
+- `spark_image`
+- `flyte_worker_image`
+- `ray_image`
+
+These fields define which ECR registry and image repositories curations use.
+
+## `kubernetes_cluster_config`
+
+Important fields:
+
+- `local_cluster_name`
+- `spark_config`
+- `ray_config`
+
+The cluster config determines where Spark and Ray jobs are submitted and the
+default capacity boundaries used by workflows.
+
+## `scheduler_config`
+
+The scheduler config maps workload types to queues. Public docs should explain
+this conceptually. Queue internals are operator-scoped and usually adjusted
+with Datology support.

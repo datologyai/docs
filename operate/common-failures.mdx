@@ -1,0 +1,87 @@
+---
+title: "Common failures"
+description: "Runtime problems operators can triage before escalating."
+icon: "circle-exclamation"
+---
+
+Start by collecting the Curation ID, Run ID, output path, and runtime version.
+Then identify which part of the path failed.
+
+## Input data cannot be read
+
+Check:
+
+- The S3 path exists.
+- Worker roles have read access.
+- The bucket region is reachable.
+- The input schema matches the data.
+
+## Unsupported schema or format
+
+`new-curation` accepts input schemas:
+
+- `dclm`
+- `dclm_parquet`
+- `c4`
+
+It accepts output formats:
+
+- `parquet`
+- `mds`
+- `jsonl`
+- `lit`
+
+See [Launch a curation](/curation/launch#supported-input-schemas-and-output-formats).
+
+## Workflow entry point is missing
+
+Register the runtime version:
+
+```bash
+datology upgrade-launchplans --version <runtime-version>
+```
+
+Then retry the preview or launch.
+
+## Another curation is already running
+
+By default, the CLI allows one running curation at a time.
+
+```bash
+datology list-curations
+datology show-curation <curation_id>
+```
+
+Cancel or wait for the existing run. Use `ALLOW_PARALLEL_CURATION_RUNS=true`
+only after confirming capacity.
+
+## Asset tracker connection fails
+
+Confirm `ASSET_TRACKER_PROD_URI` is set and reachable from the CLI runner.
+
+```bash
+echo "$ASSET_TRACKER_PROD_URI"
+datology list-datasets
+```
+
+## Kubernetes access fails
+
+Operator commands such as runtime registration require `KUBECONFIG`.
+
+```bash
+echo "$KUBECONFIG"
+kubectl get nodes
+```
+
+## Spark or Ray resource pressure
+
+Symptoms include long queue times, scheduling failures, pod evictions, or
+workers failing to start. Use:
+
+```bash
+datology show-curation <curation_id>
+ddb <curation_id>
+kubectl get events
+```
+
+Confirm cluster capacity and queue configuration before retrying large runs.

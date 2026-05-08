@@ -1,0 +1,54 @@
+---
+title: "Observability"
+description: "Where to inspect deployment health, curation status, and job logs."
+icon: "chart-line"
+---
+
+Use the CLI for normal curation status. Use Kubernetes, logs, dashboards, and
+`ddb` when you need lower-level details.
+
+## Normal curation status
+
+```bash
+datology list-curations
+datology show-curation <curation_id>
+datology info s3://<bucket>/<asset-path>/
+```
+
+`show-curation` displays overall status and task-level progress when available.
+`info` shows asset lineage and the execution version for an output path.
+
+## System monitoring
+
+The deployment installs a monitoring stack and service endpoints for product
+health. Operators should use Grafana and Kubernetes status commands to inspect
+cluster and service health.
+
+```bash
+kubectl get pods
+kubectl get svc
+kubectl get events
+```
+
+## Spark and Ray visibility
+
+Use `ddb` for run-specific Spark and Ray debugging:
+
+```bash
+ddb <curation_id>
+```
+
+For running jobs, `ddb` can open a Spark UI or Ray dashboard through
+port-forwarding. For completed jobs, it can locate S3 log artifacts and stream
+pod logs when available.
+
+## Log locations
+
+Install and runtime logs are copied to the deployment job logs bucket:
+
+```text
+s3://<environment>-datologyai-job-logs/
+```
+
+Common prefixes include installer logs, CLI runner logs, Spark logs, and Ray
+logs.

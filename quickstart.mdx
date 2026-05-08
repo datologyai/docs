@@ -1,81 +1,116 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
-icon: 'rocket'
+description: "Deploy Datology, configure the CLI runner, and launch a first curation."
+icon: "rocket"
 ---
 
-## Get started in three steps
+This path assumes Datology has provided access to the released deployment
+artifacts for your AWS account.
 
-Get your documentation site running locally and make your first customization.
+## 1. Prepare AWS access
 
-### Step 1: Set up your local environment
+Set the AWS profile and required deployment inputs.
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+```bash
+export AWS_PROFILE="<customer-aws-profile>"
+export DEPLOYMENT_PUBLIC_KEY="<ssh-public-key>"
+export CUSTOMER_NAME_PREFIX="<customer-name>"
+export VPC_SLASH_16_CIDR_BLOCK="10.50"
+```
 
-### Step 2: Deploy your changes
+If you are deploying into an existing VPC or EKS cluster, use the variables in
+the [deployment environment reference](/reference/deployment-environment-variables)
+instead of `VPC_SLASH_16_CIDR_BLOCK`.
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+## 2. Deploy the stack
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+Run the released deployment entry point.
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+```bash
+./deploy_datology.sh
+```
 
-### Step 3: Go live
+The deployment creates the AWS infrastructure, installs the Kubernetes product
+stack, creates a CLI runner, and writes the configuration files the CLI uses.
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+## 3. Connect to the CLI runner
 
-## Next steps
+After the stack completes, connect to the CLI runner instance. The runner has
+the `datology` wrapper, `kubectl`, `flytectl`, and the generated Datology
+configuration.
 
-Now that you have your docs running, explore these key features:
+```bash
+datology --help
+datology version
+datology list-curation-recipes
+```
 
-<CardGroup cols={2}>
+The runner exports the standard CLI environment variables:
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+```bash
+export DATOLOGY_CONFIG_PATH=/home/ubuntu/.config/datology_config.json
+export FLYTECTL_CONFIG=/home/ubuntu/.config/flyte_config.yaml
+export ASSET_TRACKER_PROD_URI="<asset-tracker-uri>"
+export KUBECONFIG=/home/ubuntu/.kube/config
+```
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+## 4. Register a dataset
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+Register source data from object storage. Dataset registration launches a
+workflow run, so wait for it to complete before using the dataset in a
+curation.
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+```bash
+datology add-dataset \
+  --run-name first-dataset \
+  --input-dataset-path s3://<bucket>/<source-prefix>/ \
+  --output-dataset-path s3://<bucket>/<registered-prefix>/
+```
 
-</CardGroup>
+Inspect registration status:
 
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
+```bash
+datology list-datasets
+datology describe-dataset <run_id>
+```
+
+## 5. Preview and launch a curation
+
+Preview validates inputs and shows the resolved workflow parameters without
+starting a run.
+
+```bash
+datology new-curation \
+  --run-name first-curation-preview \
+  --input-dataset-path s3://<bucket>/<registered-prefix>/ \
+  --input-schema dclm_parquet \
+  --output-dataset-path s3://<bucket>/<curated-output-prefix>/ \
+  --output-format parquet \
+  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --pretty-preview
+```
+
+Launch the curation after the preview looks correct:
+
+```bash
+datology new-curation \
+  --run-name first-curation \
+  --input-dataset-path s3://<bucket>/<registered-prefix>/ \
+  --input-schema dclm_parquet \
+  --output-dataset-path s3://<bucket>/<curated-output-prefix>/ \
+  --output-format parquet \
+  --launch-plan web_multilingual_stew_from_commons_threadpool
+```
+
+The command returns a Curation ID and an output folder.
+
+## 6. Monitor and inspect outputs
+
+```bash
+datology list-curations
+datology show-curation <curation_id>
+datology info s3://<bucket>/<curated-output-prefix>/
+```
+
+Use `ddb <curation_id>` when `show-curation` is not enough and you need Spark,
+Ray, task, or log details.

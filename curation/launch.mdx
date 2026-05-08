@@ -1,0 +1,78 @@
+---
+title: "Launch a curation"
+description: "Start a curation workflow from the CLI."
+icon: "play"
+---
+
+Use `datology new-curation` to launch a curation.
+
+```bash
+datology new-curation \
+  --run-name web-curation-001 \
+  --input-dataset-path s3://<bucket>/<input-prefix>/ \
+  --input-schema dclm_parquet \
+  --output-dataset-path s3://<bucket>/<output-prefix>/ \
+  --output-format parquet \
+  --launch-plan web_multilingual_stew_from_commons_threadpool
+```
+
+The command returns a Curation ID and output folder.
+
+## Common options
+
+| Option | Purpose |
+| --- | --- |
+| `--run-name` | Human-readable run name. |
+| `--input-dataset-path` | Object-store path for input data. |
+| `--input-schema` | Input schema: `dclm`, `dclm_parquet`, or `c4`. |
+| `--output-dataset-path` | Output path for curated data. |
+| `--output-format` | Output format: `parquet`, `mds`, `jsonl`, or `lit`. |
+| `--curation-ratio` | Ratio of output size to input size. |
+| `--launch-plan` | Workflow entry point to execute. |
+| `--version` | Runtime and workflow entry point version. |
+| `--threadpool-max-workers` | Max workers for threadpool execution. |
+
+Use [Extra curation arguments](/reference/extra-curation-args) when building
+the JSON passed to `--extra-curation-args-file`.
+
+## Supported input schemas and output formats
+
+Use `--input-schema` to tell the workflow how to read the input path.
+
+- `dclm`: DCLM-style input data.
+- `dclm_parquet`: DCLM-style parquet input data.
+- `c4`: C4-style input data.
+
+Use `--output-format` to choose the format written to the output path.
+
+- `parquet`: Default columnar output.
+- `mds`: MosaicML Streaming format.
+- `jsonl`: JSON lines output.
+- `lit`: LitData-style output.
+
+Column-level input contracts should be confirmed per schema before launching
+customer examples that depend on exact fields.
+
+## Version selection
+
+If `--version` is not passed, the CLI uses the configured default version from
+`datology_config.json`. If the workflow entry point is not registered at that
+version, the CLI can prompt for registration.
+
+```bash
+datology new-curation \
+  --output-dataset-path s3://<bucket>/<output-prefix>/ \
+  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --version <runtime-version>
+```
+
+## Parallel runs
+
+By default, the CLI allows one running curation at a time. To override this for
+an approved environment:
+
+```bash
+export ALLOW_PARALLEL_CURATION_RUNS=true
+```
+
+Use parallel runs only after confirming the cluster has enough capacity.

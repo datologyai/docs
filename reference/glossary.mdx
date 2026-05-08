@@ -1,0 +1,34 @@
+---
+title: "Glossary"
+description: "Short definitions for Datology terms and implementation terms seen in logs."
+icon: "book"
+---
+
+## Customer-facing terms
+
+| Term | Definition |
+| --- | --- |
+| Recipe | A named, supported curation template. |
+| Dataset | Customer-provided or Datology-produced data stored at an object-store path. |
+| Curation | A managed workflow run that applies a recipe to input data and writes curated output. |
+| Asset | A tracked input, output, or intermediate dataset recorded by the asset tracker. |
+| Workflow entry point | A registered, versioned target the orchestration engine can execute. |
+| Run ID | Asset-tracker identifier for a dataset or curation run. |
+| Curation ID | Workflow execution identifier used for monitoring, cancellation, and debugging. |
+| Version | Runtime image tag plus workflow entry point version. |
+
+## Implementation terms
+
+| Term | Definition |
+| --- | --- |
+| CLI runner | EC2 instance created by deployment for Datology operations. |
+| Flyte | Workflow orchestration engine used by Datology. |
+| Spark | Distributed processing framework used for large batch jobs. |
+| Ray | Distributed processing framework used for model-backed and parallel jobs. |
+| EKS | AWS-managed Kubernetes service where Datology runs. |
+| Asset tracker | Metadata store for datasets, runs, assets, lineage, and reuse. |
+| Karpenter | Kubernetes node provisioning component. |
+| YuniKorn | Scheduler used for Spark queues. |
+| Kueue | Queueing component used for Ray workloads. |
+| Launch plan | Flyte term for a registered workflow entry point. |
+| `ddb` | Datology Debugger CLI for deeper run, task, Spark, Ray, and log inspection. |

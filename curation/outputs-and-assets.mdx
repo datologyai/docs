@@ -1,0 +1,54 @@
+---
+title: "Outputs and assets"
+description: "Inspect produced paths, asset metadata, and lineage."
+icon: "folder-tree"
+---
+
+`new-curation` returns an output folder. The curation writes data there and
+records asset metadata in the asset tracker.
+
+## Inspect asset lineage
+
+```bash
+datology info s3://<bucket>/<asset-path>/
+```
+
+The output includes:
+
+- Execution version
+- Execution ID
+- Run ID
+- Run name
+
+Use `--verbose` to show recorded workflow inputs:
+
+```bash
+datology info s3://<bucket>/<asset-path>/ --verbose
+```
+
+## Backfill an existing asset
+
+Use `backfill` to register an existing customer-owned object-store path as a
+known asset.
+
+```bash
+datology backfill \
+  --input-dataset-path s3://<bucket>/<existing-path>/ \
+  --input-dataset-name raw
+```
+
+Backfilled assets can be reused or referenced by later curations.
+
+## Keep traceability fields
+
+For important outputs, keep:
+
+- Output S3 path
+- Run ID
+- Curation ID
+- Execution version
+- Recipe or launch plan
+- Runtime version
+
+These fields are enough to connect an output path to the workflow and runtime
+that produced it.

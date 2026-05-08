@@ -1,0 +1,111 @@
+---
+title: "CLI reference"
+description: "Datology CLI commands, labels, and required context."
+icon: "terminal"
+---
+
+The deployed customer command is `datology`. It wraps the `datology-cli` PEX on
+the CLI runner.
+
+## Required context
+
+Most commands need:
+
+```bash
+export DATOLOGY_CONFIG_PATH=/home/ubuntu/.config/datology_config.json
+export FLYTECTL_CONFIG=/home/ubuntu/.config/flyte_config.yaml
+export ASSET_TRACKER_PROD_URI="<asset-tracker-uri>"
+```
+
+Operator commands that update deployed services also need:
+
+```bash
+export KUBECONFIG=/home/ubuntu/.kube/config
+```
+
+## Command inventory
+
+| Command | Label | Purpose |
+| --- | --- | --- |
+| `new-curation` | Everyday | Preview or launch a curation workflow. |
+| `add-dataset` | Everyday | Register a dataset through a workflow run. |
+| `list-curations` | Everyday | List curation executions. |
+| `list-datasets` | Everyday | List dataset registration runs from the asset tracker. |
+| `list-curation-recipes` | Everyday | Show supported recipes and their launch plans. |
+| `show-curation` | Everyday | Show status and task progress for one curation. |
+| `describe-dataset` | Everyday | Show dataset registration status and ingestion summary. |
+| `info` | Everyday | Show lineage and execution info for an asset path. |
+| `cancel-curation` | Everyday | Cancel a running curation. |
+| `delete-dataset` | Everyday | Mark a dataset run as purged. Does not delete S3 data. |
+| `backfill` | Operator | Register an existing object-store path as a known asset. |
+| `download-hf-dataset` | Operator | Stage a Hugging Face dataset into customer storage. |
+| `version` | Everyday | Show CLI build and version metadata. |
+| `upgrade-launchplans` | Admin | Register workflow entry points for a runtime version. |
+| `upgrade-curation-studio` | Admin | Update the Curation Studio image and rollout. Hidden until Curation Studio is public. |
+| `register-tokenizer` | Operator | Stage a tokenizer into the configured models bucket. |
+| `register-model` | Operator | Stage a supported model into the configured models bucket. |
+
+## Curation lifecycle
+
+```bash
+datology new-curation [options]
+datology list-curations [--limit <n>] [--show-cron-jobs]
+datology show-curation <curation_id>
+datology cancel-curation <curation_id>
+```
+
+Important options for `new-curation`:
+
+- `--run-name`
+- `--input-dataset-path`
+- `--input-schema`
+- `--output-dataset-path`
+- `--output-format`
+- `--curation-ratio`
+- `--launch-plan`
+- `--version`
+- `--extra-curation-args-file`
+- `--extra-curation-args-string`
+- `--threadpool-max-workers`
+- `--pretty-preview`
+- `--full-json-preview`
+- `--auto-upgrade`
+
+## Dataset lifecycle
+
+```bash
+datology add-dataset [options]
+datology list-datasets [--limit <n>] [--all] [--domain web|target]
+datology describe-dataset <run_id>
+datology delete-dataset <run_id>
+```
+
+Important options for `add-dataset`:
+
+- `--run-name`
+- `--input-dataset-path`
+- `--output-dataset-path`
+- `--version`
+- `--extra-curation-args-file`
+- `--extra-curation-args-string`
+- `--threadpool-max-workers`
+
+## Asset operations
+
+```bash
+datology info <s3_path> [--verbose]
+datology backfill --input-dataset-path <s3_path> [--input-dataset-name <name>]
+```
+
+## Runtime and dependencies
+
+```bash
+datology version
+datology upgrade-launchplans --version <runtime-version>
+datology register-tokenizer --model-name <name-or-path>
+datology register-model --model-name <supported-model>
+datology download-hf-dataset --hf-dataset-name <dataset> --s3-bucket <bucket> --s3-path-prefix <prefix>
+```
+
+Run `datology <command> --help` on the CLI runner for the exact command help
+for the deployed version.

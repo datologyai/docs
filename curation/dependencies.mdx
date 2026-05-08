@@ -1,0 +1,70 @@
+---
+title: "Dependencies"
+description: "Stage models, tokenizers, and Hugging Face datasets for curations."
+icon: "box"
+---
+
+Some recipes and workflow arguments depend on external models, tokenizers, or
+Hugging Face datasets. Stage those dependencies into customer-accessible object
+storage before launching the curation.
+
+## Register a tokenizer
+
+```bash
+datology register-tokenizer --model-name <hugging-face-model-or-local-path>
+```
+
+For local paths:
+
+```bash
+datology register-tokenizer \
+  --model-name /path/to/local/tokenizer \
+  --is-local
+```
+
+Override the configured models bucket when needed:
+
+```bash
+datology register-tokenizer \
+  --model-name <model-name> \
+  --models-bucket-name <bucket-name>
+```
+
+## Register a model
+
+```bash
+datology register-model --model-name phi4
+```
+
+Supported registered synthetic model names currently include:
+
+- `olmo2-7b`
+- `phi4`
+- `qwen3-8b`
+- `mistral-7b-v3`
+
+## Download a Hugging Face dataset
+
+```bash
+datology download-hf-dataset \
+  --hf-dataset-name <org-or-user>/<dataset> \
+  --s3-bucket <bucket-name> \
+  --s3-path-prefix <prefix>
+```
+
+Optionally limit the downloaded subset and parallelism:
+
+```bash
+datology download-hf-dataset \
+  --hf-dataset-name <org-or-user>/<dataset> \
+  --s3-bucket <bucket-name> \
+  --s3-path-prefix <prefix> \
+  --hf-subset-prefix data/dclm \
+  --parallel-tasks 8
+```
+
+## Token access
+
+Model registry and Hugging Face token handling is deployment-specific. Store
+and rotate those tokens using the customer-approved secret process for the
+environment.

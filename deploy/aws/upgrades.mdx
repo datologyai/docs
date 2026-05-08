@@ -1,0 +1,51 @@
+---
+title: "Upgrades"
+description: "Separate stack upgrades from runtime workflow registration."
+icon: "circle-up"
+---
+
+Datology upgrades fall into two categories.
+
+## Stack upgrades
+
+Stack upgrades change infrastructure or Kubernetes services. They may update:
+
+- CloudFormation templates
+- EKS resources
+- IAM roles or policies
+- Product stack Helm templates
+- Databases or service configuration
+- Installer and CLI runner behavior
+
+Use the released deployment path and Datology-provided version guidance for
+stack upgrades.
+
+## Runtime upgrades
+
+Runtime upgrades change the images and workflow versions used by curations.
+They do not necessarily change the infrastructure stack.
+
+Register workflow entry points for a runtime version:
+
+```bash
+datology upgrade-launchplans --version <runtime-version>
+```
+
+This command:
+
+- Resolves the effective runtime version.
+- Registers workflow entry points for that version.
+- Updates the configured default version when `--version` is provided.
+- Reactivates cron launch plans for the registered version.
+
+## Required access
+
+Runtime registration requires:
+
+- `DATOLOGY_CONFIG_PATH`
+- `FLYTECTL_CONFIG`
+- `ASSET_TRACKER_PROD_URI`
+- `KUBECONFIG`
+- ECR access to the runtime image repository
+
+Treat this as an operator/admin action.

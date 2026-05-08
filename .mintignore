@@ -5,3 +5,8 @@
 # Draft content
 drafts/
 *.draft.mdx
+
+# Planning/source artifacts that should not publish as customer docs.
+plan.md
+docs_plan.md
+colors.pdf

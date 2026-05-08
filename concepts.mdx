@@ -1,0 +1,48 @@
+---
+title: "Concepts"
+description: "The customer-facing terms used throughout Datology."
+icon: "shapes"
+---
+
+Datology docs use a small set of terms consistently. These are the public
+concepts to use when reading commands, status output, and run metadata.
+
+## Core concepts
+
+| Concept | Meaning |
+| --- | --- |
+| Recipe | A named, supported curation template. Recipes define the source mixing, budgets, and constraints for a run. |
+| Dataset | Customer-provided or Datology-produced data stored at an object-store path. |
+| Curation | A managed workflow run that applies a recipe to input data and writes curated output. |
+| Asset | A tracked input, output, or intermediate dataset recorded by the asset tracker. The actual data lives in object storage. |
+| Workflow entry point | A registered, versioned target the workflow engine can execute. |
+| Run ID | The asset-tracker identifier for a dataset or curation run. Use it for metadata and lineage lookups. |
+| Curation ID | The workflow execution identifier returned when a curation launches. Use it for run management and `ddb`. |
+| Version | The runtime image tag and workflow entry point version used to execute a curation. |
+
+## Run ID and Curation ID
+
+Run IDs and Curation IDs are different identifiers.
+
+A Run ID comes from the asset tracker. It is useful when you inspect dataset
+registration, asset lineage, and metadata.
+
+A Curation ID comes from the workflow orchestration engine. It is useful when
+you monitor, cancel, or debug an execution.
+
+For full traceability, keep both identifiers with the output path for every
+curation.
+
+## What stores data
+
+Datology stores durable input, intermediate, output, and log artifacts in object
+storage. The asset tracker stores metadata about those artifacts: where they
+are, which run produced them, which runtime version created them, and whether a
+later workflow can reuse them.
+
+## What runs work
+
+The CLI submits workflow entry points. The workflow engine coordinates each
+curation. Spark and Ray jobs perform the distributed processing on Kubernetes.
+The asset tracker records the datasets, runs, task progress, outputs, and reuse
+metadata.
