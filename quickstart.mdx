@@ -18,26 +18,61 @@ export CUSTOMER_NAME_PREFIX="<customer-name>"
 export VPC_SLASH_16_CIDR_BLOCK="10.50"
 ```
 
+`VPC_SLASH_16_CIDR_BLOCK` is the first two octets of the `/16` CIDR block
+allocated to the new VPC. Any unused private range works, such as `10.50`,
+`10.42`, or `172.20`, as long as it does not overlap an existing network.
+
 If you are deploying into an existing VPC or EKS cluster, use the variables in
 the [deployment environment reference](/reference/deployment-environment-variables)
 instead of `VPC_SLASH_16_CIDR_BLOCK`.
 
-## 2. Deploy the stack
+## 2. Review the cluster configuration
 
-Run the released deployment entry point.
+The deployment provisions resources sized by `cluster_config.yaml`. Review it
+before deploying to confirm the node pools, instance types, and Spark and Ray
+queue capacity match the workloads you expect to run.
+
+## 3. Deploy the stack
+
+Run the released deployment downloader. It downloads the required deployment
+scripts and then runs the installer with your environment variables.
 
 ```bash
-./deploy_datology.sh
+python3 download_and_deploy_datology.py
 ```
 
-The deployment creates the AWS infrastructure, installs the Kubernetes product
-stack, creates a CLI runner, and writes the configuration files the CLI uses.
+The downloader resolves the released templates, scripts, and CLI artifacts,
+then invokes `deploy_datology.sh`. The deployment creates the AWS
+infrastructure, installs the Kubernetes product stack, creates a CLI runner,
+and writes the configuration files the CLI uses.
 
-## 3. Connect to the CLI runner
+## 4. Connect to the CLI runner
 
-After the stack completes, connect to the CLI runner instance. The runner has
-the `datology` wrapper, `kubectl`, `flytectl`, and the generated Datology
-configuration.
+After the stack completes, connect to the CLI runner instance. Get the instance
+ID from the parent stack output, then use the access method chosen for your
+deployment.
+
+For a public SSH path:
+
+```bash
+aws cloudformation describe-stacks \
+  --stack-name <parent-stack-name> \
+  --query "Stacks[0].Outputs[?OutputKey=='CliRunnerInstanceId'].OutputValue" \
+  --output text
+
+aws ec2 describe-instances \
+  --instance-ids <cli-runner-instance-id> \
+  --query "Reservations[0].Instances[0].PublicDnsName" \
+  --output text
+
+ssh -i <private-key-path> ubuntu@<cli-runner-public-dns-name>
+```
+
+For private deployments, use the approved private access path for the
+environment.
+
+The runner has the `datology` wrapper, `kubectl`, `flytectl`, and the generated
+Datology configuration.
 
 ```bash
 datology --help
@@ -54,17 +89,37 @@ export ASSET_TRACKER_PROD_URI="<asset-tracker-uri>"
 export KUBECONFIG=/home/ubuntu/.kube/config
 ```
 
-## 4. Register a dataset
+See [CLI runner](/deploy/aws/cli-runner) for the generated paths and installed
+tools.
+
+## 5. Register a dataset
 
 Register source data from object storage. Dataset registration launches a
 workflow run, so wait for it to complete before using the dataset in a
 curation.
 
+Create `dataset_args.json`:
+
+```json
+{
+  "name": "fineweb",
+  "source_location": "s3://<bucket>/<source-prefix>/",
+  "override_args": {
+    "text_column": "text",
+    "file_type": "parquet",
+    "metadata_column_mapping": {
+      "id": "external_id",
+      "url": "url"
+    }
+  }
+}
+```
+
 ```bash
 datology add-dataset \
   --run-name first-dataset \
-  --input-dataset-path s3://<bucket>/<source-prefix>/ \
-  --output-dataset-path s3://<bucket>/<registered-prefix>/
+  --output-dataset-path s3://<bucket>/<registered-prefix>/ \
+  --extra-curation-args-file dataset_args.json
 ```
 
 Inspect registration status:
@@ -74,7 +129,44 @@ datology list-datasets
 datology describe-dataset <run_id>
 ```
 
-## 5. Preview and launch a curation
+## 6. Prepare curation arguments
+
+Create a curation arguments file that describes inputs with the
+`IngestionSource` schema. These examples use `web_multilingual_stew`.
+
+```json
+{
+  "source_documents": [
+    {
+      "name": "fineweb",
+      "source_location": "s3://<bucket>/<registered-prefix>/",
+      "override_args": {
+        "text_column": "text",
+        "file_type": "parquet",
+        "metadata_column_mapping": {
+          "id": "external_id",
+          "url": "url"
+        }
+      }
+    }
+  ],
+  "target_documents": [
+    {
+      "name": "customer_eval",
+      "source_location": "s3://<bucket>/<target-prefix>/",
+      "override_args": {
+        "text_column": "text",
+        "file_type": "parquet"
+      }
+    }
+  ]
+}
+```
+
+See [Extra curation arguments](/reference/extra-curation-args) for the full
+schema.
+
+## 7. Preview and launch a curation
 
 Preview validates inputs and shows the resolved workflow parameters without
 starting a run.
@@ -82,11 +174,10 @@ starting a run.
 ```bash
 datology new-curation \
   --run-name first-curation-preview \
-  --input-dataset-path s3://<bucket>/<registered-prefix>/ \
-  --input-schema dclm_parquet \
+  --recipe web_multilingual_stew \
   --output-dataset-path s3://<bucket>/<curated-output-prefix>/ \
   --output-format parquet \
-  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --extra-curation-args-file curation_args.json \
   --pretty-preview
 ```
 
@@ -95,16 +186,15 @@ Launch the curation after the preview looks correct:
 ```bash
 datology new-curation \
   --run-name first-curation \
-  --input-dataset-path s3://<bucket>/<registered-prefix>/ \
-  --input-schema dclm_parquet \
+  --recipe web_multilingual_stew \
   --output-dataset-path s3://<bucket>/<curated-output-prefix>/ \
   --output-format parquet \
-  --launch-plan web_multilingual_stew_from_commons_threadpool
+  --extra-curation-args-file curation_args.json
 ```
 
 The command returns a Curation ID and an output folder.
 
-## 6. Monitor and inspect outputs
+## 8. Monitor and inspect outputs
 
 ```bash
 datology list-curations
@@ -112,5 +202,6 @@ datology show-curation <curation_id>
 datology info s3://<bucket>/<curated-output-prefix>/
 ```
 
-Use `ddb <curation_id>` when `show-curation` is not enough and you need Spark,
-Ray, task, or log details.
+Use [`ddb <curation_id>`](/operate/debugging-with-ddb) with Datology support
+when `show-curation` is not enough and you need Spark, Ray, task, or log
+details.

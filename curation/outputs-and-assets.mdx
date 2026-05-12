@@ -28,16 +28,20 @@ datology info s3://<bucket>/<asset-path>/ --verbose
 
 ## Backfill an existing asset
 
-Use `backfill` to register an existing customer-owned object-store path as a
-known asset.
+<Note>
+Use `backfill` only for importing Datology-supplied artifacts that are already
+in known internal formats. Those formats are not fully specified for customer
+use. For customer source data, use [dataset registration](/curation/datasets).
+</Note>
+
+When Datology support directs you to register a supplied artifact, use
+`backfill`:
 
 ```bash
 datology backfill \
   --input-dataset-path s3://<bucket>/<existing-path>/ \
   --input-dataset-name raw
 ```
-
-Backfilled assets can be reused or referenced by later curations.
 
 ## Keep traceability fields
 
@@ -47,7 +51,7 @@ For important outputs, keep:
 - Run ID
 - Curation ID
 - Execution version
-- Recipe or launch plan
+- Recipe
 - Runtime version
 
 These fields are enough to connect an output path to the workflow and runtime

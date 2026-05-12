@@ -1,10 +1,12 @@
 ---
 title: "Upgrades"
-description: "Separate stack upgrades from runtime workflow registration."
+description: "Stack versions, runtime image tags, and runtime recipe registration."
 icon: "circle-up"
 ---
 
-Datology upgrades fall into two categories.
+Datology has two version concepts and matching upgrade paths. Stack upgrades
+change infrastructure. Runtime upgrades change the images and recipe versions
+used by curations.
 
 ## Stack upgrades
 
@@ -20,12 +22,34 @@ Stack upgrades change infrastructure or Kubernetes services. They may update:
 Use the released deployment path and Datology-provided version guidance for
 stack upgrades.
 
+The stack version identifies the released CloudFormation templates, install
+scripts, Kubernetes product stack templates, and CLI artifacts used during
+deployment.
+
+Set a specific stack version with:
+
+```bash
+export DATOLOGY_STACK_VERSION="<stack-version>"
+```
+
+When unset, the deployment resolves the latest released stack version from the
+release bucket.
+
 ## Runtime upgrades
 
-Runtime upgrades change the images and workflow versions used by curations.
+Runtime upgrades change the images and recipe versions used by curations.
 They do not necessarily change the infrastructure stack.
 
-Register workflow entry points for a runtime version:
+Set a specific runtime image tag with:
+
+```bash
+export RUNTIME_CONTAINER_IMAGE_TAG="<runtime-version>"
+```
+
+The generated `datology_config.json` stores this as `default_version`. Future
+curations use that default unless a command passes `--version`.
+
+Register recipe entry points for a runtime version:
 
 ```bash
 datology upgrade-launchplans --version <runtime-version>
@@ -34,9 +58,9 @@ datology upgrade-launchplans --version <runtime-version>
 This command:
 
 - Resolves the effective runtime version.
-- Registers workflow entry points for that version.
+- Registers recipe entry points for that version.
 - Updates the configured default version when `--version` is provided.
-- Reactivates cron launch plans for the registered version.
+- Reactivates scheduled recipes for the registered version.
 
 ## Required access
 
@@ -49,3 +73,13 @@ Runtime registration requires:
 - ECR access to the runtime image repository
 
 Treat this as an operator/admin action.
+
+## Identify the version used by a run
+
+Use the output path with `datology info`:
+
+```bash
+datology info s3://<bucket>/<asset-path>/
+```
+
+The output includes the execution version, execution ID, Run ID, and run name.

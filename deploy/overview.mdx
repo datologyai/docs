@@ -17,7 +17,7 @@ Scope the environment
   -> run the released installer
   -> install the product stack
   -> configure the CLI runner
-  -> validate services and workflow entry points
+  -> validate services and registered recipe versions
   -> launch a smoke-test curation
 ```
 
@@ -42,8 +42,7 @@ For AWS, start with [AWS prerequisites](/deploy/aws/prerequisites).
 ## 3. Run the installer
 
 The released installer creates or connects to infrastructure resources, then
-starts the product-stack installation. The install should use released Datology
-artifacts rather than local or unofficial release flows.
+starts the product-stack installation.
 
 For AWS, use [Install](/deploy/aws/install).
 
@@ -68,11 +67,9 @@ Validation should confirm:
 - Datology product services are healthy.
 - The workflow orchestration endpoint is reachable.
 - The asset tracker is reachable.
-- Workflow entry points are registered for the runtime version.
+- Recipe versions are registered for the runtime version.
 - The CLI can list recipes, datasets, and curations.
 - A smoke-test workflow or small curation can complete.
-
-For AWS, follow [Post-install validation](/deploy/aws/post-install-validation).
 
 ## Platform guides
 

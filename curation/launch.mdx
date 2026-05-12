@@ -9,39 +9,56 @@ Use `datology new-curation` to launch a curation.
 ```bash
 datology new-curation \
   --run-name web-curation-001 \
-  --input-dataset-path s3://<bucket>/<input-prefix>/ \
-  --input-schema dclm_parquet \
+  --recipe web_multilingual_stew \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
   --output-format parquet \
-  --launch-plan web_multilingual_stew_from_commons_threadpool
+  --extra-curation-args-file curation_args.json
 ```
 
 The command returns a Curation ID and output folder.
+
+<Note>
+`--input-dataset-path` and `--input-schema` are deprecated for curation
+launches. Describe input data in `curation_args.json` with the
+`IngestionSource` schema instead.
+</Note>
 
 ## Common options
 
 | Option | Purpose |
 | --- | --- |
 | `--run-name` | Human-readable run name. |
-| `--input-dataset-path` | Object-store path for input data. |
-| `--input-schema` | Input schema: `dclm`, `dclm_parquet`, or `c4`. |
+| `--recipe` | Recipe to execute, such as `web_multilingual_stew` or `wrapped_stew_001`. |
 | `--output-dataset-path` | Output path for curated data. |
 | `--output-format` | Output format: `parquet`, `mds`, `jsonl`, or `lit`. |
 | `--curation-ratio` | Ratio of output size to input size. |
-| `--launch-plan` | Workflow entry point to execute. |
-| `--version` | Runtime and workflow entry point version. |
+| `--version` | Runtime and recipe version. |
+| `--extra-curation-args-file` | JSON file with recipe inputs and `IngestionSource` entries. |
 | `--threadpool-max-workers` | Max workers for threadpool execution. |
 
 Use [Extra curation arguments](/reference/extra-curation-args) when building
 the JSON passed to `--extra-curation-args-file`.
 
-## Supported input schemas and output formats
+## Ingestion sources and output formats
 
-Use `--input-schema` to tell the workflow how to read the input path.
+Use `IngestionSource` entries to tell the workflow how to read source data.
+Each entry names the source, points to its object-store location, and provides
+ingestion overrides such as the text column, file type, and metadata mapping.
 
-- `dclm`: DCLM-style input data.
-- `dclm_parquet`: DCLM-style parquet input data.
-- `c4`: C4-style input data.
+```json
+{
+  "source_documents": [
+    {
+      "name": "fineweb",
+      "source_location": "s3://<bucket>/<input-prefix>/",
+      "override_args": {
+        "text_column": "text",
+        "file_type": "parquet"
+      }
+    }
+  ]
+}
+```
 
 Use `--output-format` to choose the format written to the output path.
 
@@ -50,19 +67,20 @@ Use `--output-format` to choose the format written to the output path.
 - `jsonl`: JSON lines output.
 - `lit`: LitData-style output.
 
-Column-level input contracts should be confirmed per schema before launching
+Column-level input contracts should be confirmed per source before launching
 customer examples that depend on exact fields.
 
 ## Version selection
 
 If `--version` is not passed, the CLI uses the configured default version from
-`datology_config.json`. If the workflow entry point is not registered at that
-version, the CLI can prompt for registration.
+`datology_config.json`. If the recipe is not registered at that version, the
+CLI can prompt for registration.
 
 ```bash
 datology new-curation \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
-  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --recipe web_multilingual_stew \
+  --extra-curation-args-file curation_args.json \
   --version <runtime-version>
 ```
 

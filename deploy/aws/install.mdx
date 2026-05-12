@@ -4,12 +4,15 @@ description: "Run the released Datology deployment path."
 icon: "download"
 ---
 
-Use the released deployment scripts provided by Datology. The public entry
-point is:
+Use the released deployment downloader provided by Datology. It downloads the
+latest artifacts and runs the installer in one step:
 
 ```bash
-./deploy_datology.sh
+python3 download_and_deploy_datology.py
 ```
+
+Review `cluster_config.yaml` before deploying. It controls the resource shape
+for the deployment, including node pools and Spark and Ray queue capacity.
 
 ## Required environment
 
@@ -23,6 +26,9 @@ export VPC_SLASH_16_CIDR_BLOCK="10.50"
 ```
 
 `CUSTOMER_NAME_PREFIX` must be lowercase alphanumeric or dashes.
+`VPC_SLASH_16_CIDR_BLOCK` is the first two octets of the `/16` CIDR block
+allocated to the new VPC. Choose any unused private range that does not overlap
+existing VPCs or reserved network ranges.
 
 ## Common optional environment
 
@@ -41,12 +47,13 @@ customer-managed infrastructure.
 ## Run the installer
 
 ```bash
-./deploy_datology.sh
+python3 download_and_deploy_datology.py
 ```
 
-The script prints the resolved stack version, runtime image tag, network
-settings, template URLs, bucket names, and CloudFormation parameters before it
-asks for confirmation.
+The downloader fetches the released installer scripts, then the installer prints
+the resolved stack version, runtime image tag, network settings, template URLs,
+bucket names, cluster config path, and CloudFormation parameters before it asks
+for confirmation.
 
 ## Expected phases
 

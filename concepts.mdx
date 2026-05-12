@@ -11,14 +11,13 @@ concepts to use when reading commands, status output, and run metadata.
 
 | Concept | Meaning |
 | --- | --- |
-| Recipe | A named, supported curation template. Recipes define the source mixing, budgets, and constraints for a run. |
+| Recipe | A named, supported curation template. Recipes are versioned and define the inputs, output components, budgets, and constraints for a run. |
 | Dataset | Customer-provided or Datology-produced data stored at an object-store path. |
 | Curation | A managed workflow run that applies a recipe to input data and writes curated output. |
 | Asset | A tracked input, output, or intermediate dataset recorded by the asset tracker. The actual data lives in object storage. |
-| Workflow entry point | A registered, versioned target the workflow engine can execute. |
 | Run ID | The asset-tracker identifier for a dataset or curation run. Use it for metadata and lineage lookups. |
 | Curation ID | The workflow execution identifier returned when a curation launches. Use it for run management and `ddb`. |
-| Version | The runtime image tag and workflow entry point version used to execute a curation. |
+| Version | The runtime used to execute a curation. Recipes are registered per version. |
 
 ## Run ID and Curation ID
 
@@ -40,9 +39,10 @@ storage. The asset tracker stores metadata about those artifacts: where they
 are, which run produced them, which runtime version created them, and whether a
 later workflow can reuse them.
 
-## What runs work
+## How runs work
 
-The CLI submits workflow entry points. The workflow engine coordinates each
+The CLI submits a versioned recipe. The workflow engine coordinates each
 curation. Spark and Ray jobs perform the distributed processing on Kubernetes.
 The asset tracker records the datasets, runs, task progress, outputs, and reuse
-metadata.
+metadata. See [Architecture](/architecture) for the deployed components behind
+this flow.

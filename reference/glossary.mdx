@@ -12,10 +12,9 @@ icon: "book"
 | Dataset | Customer-provided or Datology-produced data stored at an object-store path. |
 | Curation | A managed workflow run that applies a recipe to input data and writes curated output. |
 | Asset | A tracked input, output, or intermediate dataset recorded by the asset tracker. |
-| Workflow entry point | A registered, versioned target the orchestration engine can execute. |
 | Run ID | Asset-tracker identifier for a dataset or curation run. |
 | Curation ID | Workflow execution identifier used for monitoring, cancellation, and debugging. |
-| Version | Runtime image tag plus workflow entry point version. |
+| Version | Runtime used to execute a curation. Recipes are registered per version. |
 
 ## Implementation terms
 
@@ -30,5 +29,5 @@ icon: "book"
 | Karpenter | Kubernetes node provisioning component. |
 | YuniKorn | Scheduler used for Spark queues. |
 | Kueue | Queueing component used for Ray workloads. |
-| Launch plan | Flyte term for a registered workflow entry point. |
-| `ddb` | Datology Debugger CLI for deeper run, task, Spark, Ray, and log inspection. |
+| Launch plan | Flyte term for a registered recipe execution target. |
+| `ddb` | Advanced Datology Debugger CLI for deeper run, task, Spark, Ray, and log inspection with Datology support. |

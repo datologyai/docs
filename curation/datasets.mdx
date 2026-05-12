@@ -9,27 +9,47 @@ storage path. Register datasets before using them in curations.
 
 ## Register a dataset
 
+Create a dataset arguments file that describes the source with the
+`IngestionSource` schema:
+
+```json
+{
+  "name": "fineweb",
+  "source_location": "s3://<bucket>/<source-prefix>/",
+  "override_args": {
+    "text_column": "text",
+    "file_type": "parquet",
+    "metadata_column_mapping": {
+      "id": "external_id",
+      "url": "url"
+    },
+    "max_row_size": 1000000
+  }
+}
+```
+
+Register the source:
+
 ```bash
 datology add-dataset \
   --run-name <dataset-run-name> \
-  --input-dataset-path s3://<bucket>/<source-prefix>/ \
-  --output-dataset-path s3://<bucket>/<registered-output-prefix>/
+  --output-dataset-path s3://<bucket>/<registered-output-prefix>/ \
+  --extra-curation-args-file dataset_args.json
 ```
 
 `add-dataset` launches a registration workflow. It is not a synchronous record
 write. Wait for the registration run to complete before treating the dataset as
 curatable.
 
-You can pass extra workflow arguments through a JSON file or JSON string:
+You can also pass the same JSON object as a string:
 
 ```bash
 datology add-dataset \
-  --input-dataset-path s3://<bucket>/<source-prefix>/ \
   --output-dataset-path s3://<bucket>/<registered-output-prefix>/ \
-  --extra-curation-args-file args.json
+  --extra-curation-args-string '{"name":"fineweb","source_location":"s3://<bucket>/<source-prefix>/","override_args":{"text_column":"text","file_type":"parquet"}}'
 ```
 
-For dataset registration, the JSON file describes the source name, source
+For dataset registration, the JSON object describes the source name, source
 location, and ingestion arguments such as text column, file type, metadata
 column mapping, and maximum row size. See
 [Extra curation arguments](/reference/extra-curation-args#dataset-registration-arguments).
@@ -50,8 +70,8 @@ all statuses.
 Use `--domain` to filter dataset registration runs by purpose.
 
 - `web`: source datasets used for curation.
-- `target`: target or evaluation datasets used for distribution matching,
-  scoring, or decontamination.
+- `target`: target or evaluation datasets used for distribution matching or
+  decontamination.
 
 Dataset list output can show these dataset type labels:
 

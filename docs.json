@@ -51,10 +51,8 @@
                   "deploy/aws/network-and-access",
                   "deploy/aws/storage-and-buckets",
                   "deploy/aws/compute-and-scheduling",
-                  "deploy/aws/runtime-images-and-versions",
                   "deploy/aws/install",
                   "deploy/aws/cli-runner",
-                  "deploy/aws/post-install-validation",
                   "deploy/aws/upgrades",
                   "deploy/aws/security-and-secrets",
                   "deploy/aws/observability",
@@ -68,7 +66,7 @@
             "pages": [
               "operate/versioning",
               "operate/debugging-with-ddb",
-              "operate/job-logs",
+              "operate/support",
               "operate/common-failures"
             ]
           },

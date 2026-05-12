@@ -44,7 +44,7 @@ If your AWS organization requires permission boundaries, set
 | --- | --- |
 | `DEPLOYMENT_PUBLIC_KEY` | SSH public key used for deployment access and debugging. |
 | `CUSTOMER_NAME_PREFIX` | Lowercase customer identifier used in stack naming and default domain generation. |
-| `VPC_SLASH_16_CIDR_BLOCK` | First two octets for new VPC CIDR allocation when creating a new network. |
+| `VPC_SLASH_16_CIDR_BLOCK` | First two octets for new VPC CIDR allocation when creating a new network. Choose an unused value. |
 
 Example:
 
@@ -53,6 +53,9 @@ export DEPLOYMENT_PUBLIC_KEY="ssh-rsa AAAA..."
 export CUSTOMER_NAME_PREFIX="acme"
 export VPC_SLASH_16_CIDR_BLOCK="10.50"
 ```
+
+`10.50` is an example. Use a prefix that does not overlap existing VPCs or
+reserved network ranges.
 
 ## DNS
 

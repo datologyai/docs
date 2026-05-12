@@ -21,15 +21,14 @@ The install has two layers.
 The public deployment path is the released stack entry point:
 
 ```bash
-./deploy_datology.sh
+python3 download_and_deploy_datology.py
 ```
 
-The deployment script looks up released templates and artifacts, creates the
-CloudFormation parent stack, installs the Kubernetes product stack, and prepares
-the CLI runner.
-
-Internal local-release and unofficial stack flows are not part of the public
-customer path.
+Before running it, review `cluster_config.yaml`. It controls the size and shape
+of the resources the stack will create. The downloader retrieves the released
+deployment scripts and runs the installer. The installer looks up released
+templates and artifacts, creates the CloudFormation parent stack, installs the
+Kubernetes product stack, and prepares the CLI runner.
 
 ## Deployment outputs
 
@@ -44,7 +43,7 @@ Keep these values after installation:
 - `KUBECONFIG`
 - Asset, log, code-artifact, and model/artifact bucket names
 - Runtime image tag
-- Registered workflow entry point version
+- Registered recipe version
 
 Most CLI commands need the generated config file, workflow endpoint config, and
 asset tracker connection. Operator commands also need Kubernetes access.
@@ -56,4 +55,3 @@ asset tracker connection. Operator commands also need Kubernetes access.
 3. Confirm [storage and bucket](/deploy/aws/storage-and-buckets) requirements.
 4. Run the [install](/deploy/aws/install).
 5. Connect to the [CLI runner](/deploy/aws/cli-runner).
-6. Complete [post-install validation](/deploy/aws/post-install-validation).

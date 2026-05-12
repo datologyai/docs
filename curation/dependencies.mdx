@@ -38,10 +38,18 @@ datology register-model --model-name phi4
 
 Supported registered synthetic model names currently include:
 
+- `gpt-oss-20b`
 - `olmo2-7b`
+- `olmo3-7b-instruct`
 - `phi4`
+- `qwen2.5-coder-7b-instruct`
 - `qwen3-8b`
+- `qwen3-5-9b`
+- `gemma-4-e4b-it`
 - `mistral-7b-v3`
+- `ministral-3-8b-instruct`
+
+The exact accepted keys come from the model registry in the deployed runtime.
 
 ## Download a Hugging Face dataset
 
@@ -62,6 +70,12 @@ datology download-hf-dataset \
   --hf-subset-prefix data/dclm \
   --parallel-tasks 8
 ```
+
+<Note>
+`download-hf-dataset` stages files in object storage. It does not make the
+dataset immediately available to curations. Register or ingest the staged data
+before using it in a recipe.
+</Note>
 
 ## Token access
 

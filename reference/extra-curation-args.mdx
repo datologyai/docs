@@ -16,8 +16,8 @@ recipe, or workload size.
 ```bash
 datology new-curation \
   --run-name stew-run \
+  --recipe wrapped_stew_001 \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
-  --launch-plan wrapped_stew_001_from_commons_threadpool \
   --extra-curation-args-file stew_args.json \
   --pretty-preview
 ```
@@ -198,7 +198,8 @@ multilingual curation.
 
 Optional. Type: `list[str]` or `null`.
 
-Target datasets for multilingual mining. Defaults to `web_target_names`.
+Target datasets for multilingual distribution fitting. Defaults to
+`web_target_names`.
 
 ### `code_included_languages`
 
@@ -410,7 +411,6 @@ Optional. Machine type for rephrase workers.
 ```bash
 datology add-dataset \
   --run-name desired-dataset-name \
-  --input-dataset-path s3://customer-data/raw/fineweb/ \
   --output-dataset-path s3://customer-data/registered/fineweb/ \
   --extra-curation-args-file dataset_args.json
 ```

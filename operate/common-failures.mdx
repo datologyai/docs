@@ -14,26 +14,25 @@ Check:
 - The S3 path exists.
 - Worker roles have read access.
 - The bucket region is reachable.
-- The input schema matches the data.
+- The `IngestionSource` file type, text column, and metadata mappings match the
+  data.
 
-## Unsupported schema or format
+## Unsupported source or format
 
-`new-curation` accepts input schemas:
+`new-curation` reads source data from `IngestionSource` entries in the curation
+arguments file. Confirm that each source has a supported file type and required
+column mappings.
 
-- `dclm`
-- `dclm_parquet`
-- `c4`
-
-It accepts output formats:
+`new-curation` accepts these output formats:
 
 - `parquet`
 - `mds`
 - `jsonl`
 - `lit`
 
-See [Launch a curation](/curation/launch#supported-input-schemas-and-output-formats).
+See [Launch a curation](/curation/launch#ingestion-sources-and-output-formats).
 
-## Workflow entry point is missing
+## Recipe version is missing
 
 Register the runtime version:
 

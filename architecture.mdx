@@ -38,12 +38,16 @@ The product stack runs on EKS and installs the services used by curations:
 Customer operator
   -> datology CLI on the CLI runner
   -> recipe, dataset, version, and output path
-  -> registered workflow entry point
+  -> registered recipe implementation
   -> Spark and Ray jobs on EKS
   -> object storage artifacts
   -> asset tracker metadata
 ```
 
-The CLI is the supported customer interface. You may see Flyte, Spark, Ray,
-Kubernetes, and asset-tracker terms in logs and status output, but the primary
-customer workflow is still dataset registration and curation through `datology`.
+The `datology` CLI is the main customer entry point. Use it for dataset
+registration, curation launches, status, cancellation, and asset inspection.
+
+`ddb` is an advanced debug surface for deeper run, Spark, Ray, task, and log
+inspection. Use it with Datology support. This is where you may see Flyte,
+Spark, Ray, Kubernetes, and asset-tracker terms in logs and status output.
+Normal customer workflows should stay on `datology`.

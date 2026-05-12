@@ -1,0 +1,75 @@
+---
+title: "Support"
+description: "Find the right logs and collect context for Datology support."
+icon: "life-ring"
+---
+
+When something goes wrong, collect the logs for the phase you are in and the
+identifiers for the affected run.
+
+## Deployment issues
+
+If an install or upgrade fails, collect:
+
+- CloudFormation stack name
+- Failing phase: release lookup, CloudFormation, Helm installer, CLI runner, or
+  automated smoke-test validation
+- Helm installer logs
+- CLI runner logs when runner setup failed
+
+Installer logs are available on the Helm installer and in the job logs bucket:
+
+```text
+/var/log/helm-installer.log
+s3://<environment>-datologyai-job-logs/helm-installer/
+```
+
+CLI runner logs are available on the CLI runner and in the job logs bucket:
+
+```text
+/var/log/cli-runner.log
+/var/log/cli-runner-docker-install.log
+s3://<environment>-datologyai-job-logs/cli-runner/
+```
+
+See [Deployment troubleshooting](/deploy/aws/troubleshooting) for known failure
+modes.
+
+## Curation issues
+
+For curation failures, start with:
+
+```bash
+datology show-curation <curation_id>
+```
+
+When `show-curation` is not enough, use [`ddb`](/operate/debugging-with-ddb)
+with Datology support to locate Spark, Ray, and task logs for the specific run:
+
+```bash
+ddb <curation_id>
+```
+
+Spark and Ray jobs also write durable log artifacts to S3. `ddb` can identify
+the relevant prefixes.
+
+For direct Kubernetes inspection:
+
+```bash
+kubectl get pods
+kubectl logs <pod-name>
+kubectl describe pod <pod-name>
+```
+
+## Contact support
+
+When you contact <a href="mailto:support@datologyai.com">support@datologyai.com</a>,
+include:
+
+- Curation ID
+- Run ID
+- Output path
+- Runtime version
+- `datology show-curation <curation_id>` output
+- Relevant `ddb` findings if Datology support asks you to run it
+- Installer or runtime log prefix

@@ -1,10 +1,10 @@
 ---
 title: "Deployment environment variables"
-description: "Install-time variables used by deploy_datology.sh."
+description: "Install-time variables used by the deployment downloader and installer."
 icon: "list"
 ---
 
-Set these variables before running `deploy_datology.sh`.
+Set these variables before running `download_and_deploy_datology.py`.
 
 ## Required
 
@@ -12,7 +12,7 @@ Set these variables before running `deploy_datology.sh`.
 | --- | --- |
 | `DEPLOYMENT_PUBLIC_KEY` | SSH public key for deployment access and debugging. |
 | `CUSTOMER_NAME_PREFIX` | Lowercase customer identifier for stack naming and default domain generation. |
-| `VPC_SLASH_16_CIDR_BLOCK` | First two octets for new VPC CIDR allocation. Required when creating a new network. |
+| `VPC_SLASH_16_CIDR_BLOCK` | First two octets for new VPC CIDR allocation. Required when creating a new network. Choose an unused value. |
 
 ## Common optional
 

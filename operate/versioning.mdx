@@ -1,11 +1,11 @@
 ---
 title: "Versioning"
-description: "How runtime versions and workflow registration affect curations."
+description: "How runtime versions affect curations."
 icon: "tags"
 ---
 
 Curations run against a runtime version. The runtime version identifies the
-container images and workflow entry points used by execution.
+container images and registered recipe implementations used by execution.
 
 ## Default version
 
@@ -15,7 +15,8 @@ does not pass `--version`, the CLI uses that default.
 ```bash
 datology new-curation \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
-  --launch-plan web_multilingual_stew_from_commons_threadpool
+  --recipe web_multilingual_stew \
+  --extra-curation-args-file curation_args.json
 ```
 
 ## Explicit version
@@ -25,7 +26,8 @@ Use `--version` to run against a specific runtime version.
 ```bash
 datology new-curation \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
-  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --recipe web_multilingual_stew \
+  --extra-curation-args-file curation_args.json \
   --version <runtime-version>
 ```
 
@@ -35,11 +37,10 @@ When the configured default is `latest`, the CLI resolves it to the concrete
 runtime image tag for the invocation. Prefer concrete version tags for
 production runbooks.
 
-## Missing workflow entry point
+## Missing recipe version
 
-If the selected workflow entry point is not registered for the resolved
-version, the CLI reports the missing launch plan and can prompt for
-registration.
+If the selected recipe is not registered for the resolved version, the CLI
+reports the missing registration and can prompt for registration.
 
 Register versions directly as an operator:
 
@@ -52,13 +53,14 @@ For single-command automatic registration:
 ```bash
 datology new-curation \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
-  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --recipe web_multilingual_stew \
+  --extra-curation-args-file curation_args.json \
   --version <runtime-version> \
   --auto-upgrade
 ```
 
 Use `--auto-upgrade` only when the environment allows operators to register
-workflow entry points during curation launch.
+recipe versions during curation launch.
 
 ## Inspect a completed run version
 

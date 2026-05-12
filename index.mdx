@@ -39,7 +39,7 @@ The platform is organized around a few customer-facing primitives:
 - **Datasets** represent source or produced data in object storage.
 - **Curations** run recipes against datasets.
 - **Assets** track produced outputs, intermediate data, metadata, and lineage.
-- **Versions** bind curations to a runtime image and registered workflow entry point.
+- **Versions** bind curations to registered runtime behavior.
 
 The current customer interface is the `datology` CLI on the CLI runner created
 by deployment.
@@ -57,7 +57,7 @@ workflows:
 - **Multilingual curation** extends curation benefits beyond English-only datasets.
 
 The output is a curated dataset plus the metadata needed to understand where it
-came from, which run produced it, and which runtime version was used.
+came from, which run produced it, and which artifacts are associated with it.
 
 ## What you can do from the docs
 
@@ -72,7 +72,7 @@ came from, which run produced it, and which runtime version was used.
     List curations, inspect task progress, and cancel running workflows.
   </Card>
   <Card title="Debug deeper" icon="bug" href="/operate/debugging-with-ddb">
-    Use `ddb` when normal status output is not enough.
+    Use `ddb` with Datology support when normal status output is not enough.
   </Card>
 </CardGroup>
 

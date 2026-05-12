@@ -5,7 +5,7 @@ icon: "route"
 ---
 
 Datology can create new AWS networking or use existing customer resources.
-Choose the pattern before running `deploy_datology.sh`.
+Choose the pattern before running the deployment downloader.
 
 ## New network and new EKS
 
@@ -17,8 +17,9 @@ export CREATE_NEW_EKS_CLUSTER=true
 export VPC_SLASH_16_CIDR_BLOCK="10.50"
 ```
 
-The installer validates CIDR conflicts and creates the VPC, subnets, EKS
-cluster, and required access rules.
+`10.50` is only an example first-two-octet prefix. Choose a value that does not
+overlap existing VPCs or reserved network ranges. The installer validates CIDR
+conflicts and creates the VPC, subnets, EKS cluster, and required access rules.
 
 ## Existing network or existing EKS
 

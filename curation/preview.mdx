@@ -12,11 +12,10 @@ launching a curation.
 ```bash
 datology new-curation \
   --run-name preview-web \
-  --input-dataset-path s3://<bucket>/<input-prefix>/ \
-  --input-schema dclm_parquet \
+  --recipe web_multilingual_stew \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
   --output-format parquet \
-  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --extra-curation-args-file curation_args.json \
   --pretty-preview
 ```
 
@@ -27,10 +26,9 @@ Use `--pretty-preview` when you want an operator-readable summary.
 ```bash
 datology new-curation \
   --run-name preview-web-json \
-  --input-dataset-path s3://<bucket>/<input-prefix>/ \
-  --input-schema dclm_parquet \
+  --recipe web_multilingual_stew \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
-  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --extra-curation-args-file curation_args.json \
   --full-json-preview
 ```
 
@@ -43,7 +41,7 @@ Extra arguments can come from a JSON file:
 ```bash
 datology new-curation \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
-  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --recipe web_multilingual_stew \
   --extra-curation-args-file args.json \
   --pretty-preview
 ```
@@ -56,7 +54,7 @@ Or from a JSON string:
 ```bash
 datology new-curation \
   --output-dataset-path s3://<bucket>/<output-prefix>/ \
-  --launch-plan web_multilingual_stew_from_commons_threadpool \
+  --recipe web_multilingual_stew \
   --extra-curation-args-string '{"curation_ratio": 0.8}' \
   --pretty-preview
 ```
@@ -65,6 +63,6 @@ When both are supplied, string values override duplicate keys from the file.
 
 ## What preview validates
 
-Preview checks that the CLI can resolve the version, workflow entry point, and
-workflow inputs. It does not guarantee that enough cluster capacity exists or
-that every downstream data read will succeed.
+Preview checks that the CLI can resolve the version, recipe, and workflow
+inputs. It does not guarantee that enough cluster capacity exists or that every
+downstream data read will succeed.

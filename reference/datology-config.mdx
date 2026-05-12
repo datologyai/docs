@@ -11,16 +11,8 @@ runner.
 export DATOLOGY_CONFIG_PATH=/home/ubuntu/.config/datology_config.json
 ```
 
-## Resolution order
-
-The config loader resolves configuration in this order:
-
-1. `DATOLOGY_CONFIG_JSON`
-2. `DATOLOGY_CONFIG_PATH`
-3. `./config/config.json`
-
-`DATOLOGY_CONFIG_JSON` is internal runtime state injected into workflow pods.
-Customer operators should use `DATOLOGY_CONFIG_PATH`.
+Customer operators should use `DATOLOGY_CONFIG_PATH` on the CLI runner. The
+deployment generates the file and exports the variable for CLI use.
 
 ## Top-level fields
 
@@ -69,6 +61,5 @@ default capacity boundaries used by workflows.
 
 ## `scheduler_config`
 
-The scheduler config maps workload types to queues. Public docs should explain
-this conceptually. Queue internals are operator-scoped and usually adjusted
-with Datology support.
+The scheduler config maps workload types to queues for Spark and Ray jobs.
+Datology support usually adjusts queue internals with customer operators.

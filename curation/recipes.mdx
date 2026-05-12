@@ -4,8 +4,10 @@ description: "Supported curation templates and how to choose one."
 icon: "utensils"
 ---
 
-A recipe is a named, supported curation template. It defines the workflow entry
-point, expected inputs, source mixing, budgets, and constraints for a curation.
+A recipe is a named, supported curation template. It defines expected inputs,
+output components, budgets, and constraints for a curation. Use the recipe name
+when launching a customer curation; the CLI resolves the lower-level execution
+target.
 
 List recipes from the CLI runner:
 
@@ -15,10 +17,10 @@ datology list-curation-recipes
 
 ## Supported recipes
 
-| Recipe | Launch plan | Intended use |
-| --- | --- | --- |
-| `web_multilingual_stew` | `web_multilingual_stew_from_commons_threadpool` | Web and multilingual curation across quality tiers, with optional per-language translation. |
-| `stew_001` | `wrapped_stew_001_from_commons_threadpool` | Full stew combining web, code, math, and multilingual curation into one workflow. |
+| Recipe | Intended use |
+| --- | --- |
+| `web_multilingual_stew` | Web and multilingual curation across quality tiers, with optional per-language translation. |
+| `wrapped_stew_001` | Full stew combining web, code, math, and multilingual curation into one deprecated joint ingest-and-curate workflow. |
 
 ## `web_multilingual_stew`
 
@@ -30,24 +32,38 @@ Recommended token range:
 60B - 10T tokens
 ```
 
-Mixing sources include:
+Expected inputs:
+
+- Web source data
+- Web target data for distribution fitting
+- Optional multilingual source data with language labels
+- Optional multilingual target data
+
+Labeled output components include:
 
 - High-quality score-filtered web data
 - Medium-quality web data
-- Embedding-mined web data
+- Distribution-fitted web data
 - Rephrased synthetic web data
 - Per-language translated data
 
 Notes:
 
-- Input web tokens should be at least 2x total web output tokens after dedup.
+- For a target output size, we require at least 2x the input web tokens after
+  deduplication. More frequently we suggest a 5-to-1 ratio.
 - Multilingual runs require native source tokens and English tokens.
 - Rephrasing can use the registered synthetic models staged in the customer artifact bucket.
 
-## `stew_001`
+## `wrapped_stew_001`
 
 Use this recipe when the target output combines web, code, math, and
 multilingual sources.
+
+<Note>
+`wrapped_stew_001` still uses the deprecated joint ingest and curate flow. It
+requires inline ingestion through `ingest_args` instead of separate dataset
+registration.
+</Note>
 
 Recommended token range:
 
@@ -55,9 +71,17 @@ Recommended token range:
 60B - 10T tokens
 ```
 
-Mixing sources include:
+Expected inputs:
 
-- High-quality, medium-quality, mined, and synthetic web data
+- Web source data
+- Web target data for distribution fitting
+- Code source data with language labels
+- Math source data
+- Multilingual source data with language labels
+
+Labeled output components include:
+
+- High-quality, medium-quality, distribution-fitted, and synthetic web data
 - BeyondWeb code rephrasing
 - Synthetic code rephrasing
 - Curated math data
@@ -65,9 +89,9 @@ Mixing sources include:
 
 Notes:
 
-- Supports inline ingestion through `ingest_args`.
-- Multilingual prefilter percentile defaults are recipe-defined.
-- Code curation supports included and excluded language filters.
+- Requires inline ingestion through `ingest_args`.
+- Code and multilingual data require provided language labels.
+- Math synthesis needs available H100 nodes.
 
 For customer-facing configuration fields such as source documents, target
 documents, token budgets, domain dataset names, model overrides, URL filters,
@@ -76,8 +100,8 @@ deduplication, and cluster sizing overrides, see
 
 ## Runtime compatibility
 
-Recipes map to registered workflow entry points. If a recipe is not registered
-for the runtime version you selected, register the version with:
+Recipes are versioned. If a recipe is not registered for the runtime version
+you selected, register the version with:
 
 ```bash
 datology upgrade-launchplans --version <runtime-version>

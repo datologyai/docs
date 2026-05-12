@@ -31,16 +31,16 @@ export KUBECONFIG=/home/ubuntu/.kube/config
 | `add-dataset` | Everyday | Register a dataset through a workflow run. |
 | `list-curations` | Everyday | List curation executions. |
 | `list-datasets` | Everyday | List dataset registration runs from the asset tracker. |
-| `list-curation-recipes` | Everyday | Show supported recipes and their launch plans. |
+| `list-curation-recipes` | Everyday | Show supported recipe names and descriptions. |
 | `show-curation` | Everyday | Show status and task progress for one curation. |
 | `describe-dataset` | Everyday | Show dataset registration status and ingestion summary. |
 | `info` | Everyday | Show lineage and execution info for an asset path. |
 | `cancel-curation` | Everyday | Cancel a running curation. |
 | `delete-dataset` | Everyday | Mark a dataset run as purged. Does not delete S3 data. |
-| `backfill` | Operator | Register an existing object-store path as a known asset. |
+| `backfill` | Operator | Import Datology-supplied artifacts that are already in known internal formats. |
 | `download-hf-dataset` | Operator | Stage a Hugging Face dataset into customer storage. |
 | `version` | Everyday | Show CLI build and version metadata. |
-| `upgrade-launchplans` | Admin | Register workflow entry points for a runtime version. |
+| `upgrade-launchplans` | Admin | Register recipe entry points for a runtime version. |
 | `upgrade-curation-studio` | Admin | Update the Curation Studio image and rollout. Hidden until Curation Studio is public. |
 | `register-tokenizer` | Operator | Stage a tokenizer into the configured models bucket. |
 | `register-model` | Operator | Stage a supported model into the configured models bucket. |
@@ -57,12 +57,10 @@ datology cancel-curation <curation_id>
 Important options for `new-curation`:
 
 - `--run-name`
-- `--input-dataset-path`
-- `--input-schema`
 - `--output-dataset-path`
 - `--output-format`
 - `--curation-ratio`
-- `--launch-plan`
+- `--recipe`
 - `--version`
 - `--extra-curation-args-file`
 - `--extra-curation-args-string`
@@ -83,7 +81,6 @@ datology delete-dataset <run_id>
 Important options for `add-dataset`:
 
 - `--run-name`
-- `--input-dataset-path`
 - `--output-dataset-path`
 - `--version`
 - `--extra-curation-args-file`

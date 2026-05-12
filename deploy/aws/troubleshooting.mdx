@@ -1,11 +1,11 @@
 ---
 title: "Deployment troubleshooting"
-description: "Common install-time and validation failures."
+description: "Common install-time and smoke-test failures."
 icon: "triangle-exclamation"
 ---
 
 Start with the failing phase: release lookup, CloudFormation, Helm installer,
-CLI runner, or post-install validation.
+CLI runner, or automated smoke-test validation.
 
 ## Release bucket access fails
 
@@ -64,10 +64,10 @@ s3://<environment>-datologyai-job-logs/cli-runner/
 Confirm the runner can download the CLI PEX, update kubeconfig, reach the asset
 tracker service, and run `datology --help`.
 
-## Launch plans missing
+## Recipe versions missing
 
-If a curation reports that a workflow entry point is not registered at the
-requested version, register it:
+If a curation reports that a recipe is not registered at the requested version,
+register it:
 
 ```bash
 datology upgrade-launchplans --version <runtime-version>
